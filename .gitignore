@@ -1,0 +1,6 @@
+demos/
+node_modules/
+.tmp/
+site/dist/
+legacy/
+site/public/data/
