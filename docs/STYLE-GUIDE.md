@@ -62,6 +62,7 @@ Rule: side colours (T/CT) are used for in-game things (players, rounds, kill fee
 - Players: side-coloured dot, dark 2 px halo, health ring (green > 50, amber > 25, red below), view cone at 20 % opacity, name in white with a black shadow.
 - Focus mode: everyone but the selected player drops to 35 % opacity at 70 % size, with no cone or name; the focused player is 15 % larger with a longer trail and a white ring.
 - Utility: smoke grey, fire orange, flash white ring, HE red ring; grenade badges are dark discs with a coloured rim.
+- Heatmap ramps: paths use the brand palette (`#8E1EA2` → `#C654C3` → `#ED96D7` → `#FFC0DE`), deaths use red to amber to cream (`#8b1e1e` → `#e5534b` → `#ffd23f` → `#fff6c8`), kills use teal. Transparent below 4 % intensity so the radar stays readable.
 - Annotation colours: `#ff4d3d`, `#ffd23f`, `#4fd37a`, `#ffffff`, `#4cc9f0` (chosen to read on every radar).
 
 ## Accessibility

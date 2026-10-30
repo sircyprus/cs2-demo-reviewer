@@ -37,6 +37,20 @@ export function drawIcon(g, kind, x, y, r, lw) {
   g.restore();
 }
 
+// Colour ramps: [position, r, g, b]. Paths use the brand palette; deaths use the "bad" red/amber; kills use teal.
+const HEAT_RAMPS = {
+  paths: [[0, 142, 30, 162], [0.5, 198, 84, 195], [0.8, 237, 150, 215], [1, 255, 192, 222]],
+  deaths: [[0, 139, 30, 30], [0.5, 229, 83, 75], [0.8, 255, 210, 63], [1, 255, 246, 200]],
+  kills: [[0, 20, 90, 100], [0.5, 111, 211, 201], [1, 230, 255, 250]],
+};
+function rampColor(ramp, t) {
+  for (let i = 1; i < ramp.length; i++) {
+    if (t <= ramp[i][0]) { const a = ramp[i - 1], b = ramp[i], f = (t - a[0]) / (b[0] - a[0] || 1); return [a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f, a[3] + (b[3] - a[3]) * f]; }
+  }
+  const l = ramp[ramp.length - 1]; return [l[1], l[2], l[3]];
+}
+export const HEAT_GRADIENT = Object.fromEntries(Object.entries(HEAT_RAMPS).map(([k, r]) => [k, 'linear-gradient(90deg,' + r.map(s => 'rgb(' + s.slice(1).join(',') + ') ' + Math.round(s[0] * 100) + '%').join(',') + ')']));
+
 const loadImg = src => { const i = new Image(); i.src = src; return i; };
 
 export class ReplayEngine {
@@ -57,6 +71,9 @@ export class ReplayEngine {
     this.W = this.H = this.S = 0; this.dpr = 1;
     this.playing = false; this.speed = 2; this.lastTs = 0; this.lastHud = 0;
     this.trail = true; this.names = true; this.level = 'upper'; this.selected = -1; this.focus = false;
+    // heatmap overlay: layer off|deaths|kills|paths, side -1|0|1, player -1|index, rounds all|current|range
+    this.heat = { layer: 'off', side: -1, player: -1, rounds: { mode: 'all', from: 1, to: D.rounds.length } };
+    this.heatDirty = false; this.heatCanvas = null; this.heatN = 0; this.heatCur = -1;
     this.drawOn = false; this.tool = 'pen'; this.color = COLORS[0]; this.cur = null; this.ann = {};
     this.drag = null; this.tlDrag = false;
     this.nameIdx = {}; D.names.forEach((n, i) => { this.nameIdx[n] = i; });
@@ -170,13 +187,95 @@ export class ReplayEngine {
 
     return {
       playing: this.playing, speed: this.speed, drawOn: this.drawOn, tool: this.tool, color: this.color,
-      trail: this.trail, names: this.names, level: this.level, focus: this.focus, selected: this.selected, hasLower: !!(this.radar && this.radar.hasLower),
+      trail: this.trail, names: this.names, level: this.level, focus: this.focus, selected: this.selected, heat: this.heat, heatN: this.heatN, nRounds: D.rounds.length, hasLower: !!(this.radar && this.radar.hasLower),
       clock: { big, small, bomb, round: R.n, total: D.rounds.length },
       scoreT: tIsA ? sA : sB, scoreCT: tIsA ? sB : sA, teamT: tIsA ? 'Team A' : 'Team B', teamCT: tIsA ? 'Team B' : 'Team A',
       cards, hdr: [hdr(0), hdr(1)], feed, rinfo,
     };
   }
   emit() { this.onHud(this.computeHud()); }
+
+  // ---------- heatmaps ----------
+  setHeat(p) {
+    const h = this.heat;
+    if (p.layer != null) h.layer = p.layer;
+    if (p.side != null) h.side = p.side;
+    if (p.player != null) h.player = p.player;
+    if (p.rounds) h.rounds = { ...h.rounds, ...p.rounds };
+    this.heatDirty = true; this.emit();
+  }
+  // Density of deaths / kills / movement on a 256x256 grid over the radar, blurred and colour-mapped once;
+  // drawing it each frame is a single drawImage. Rebuilt only when the filters, level or (in "this round" mode) the round change.
+  buildHeat() {
+    const h = this.heat, D = this.D, F = this.F, N = 256;
+    this.heatDirty = false;
+    if (h.layer === 'off') { this.heatCanvas = null; this.heatN = 0; return; }
+    const grid = new Float32Array(N * N), hasLower = this.radar && this.radar.hasLower;
+    let n = 0;
+    const add = (x, y, z) => {
+      if (hasLower && this.levelOf(z) !== this.level) return;
+      const [u, v] = this.world(x, y), gx = Math.floor(u * N), gy = Math.floor(v * N);
+      if (gx < 0 || gy < 0 || gx >= N || gy >= N) return;
+      grid[gy * N + gx] += 1; n++;
+    };
+    const cur = this.roundIdx(this.tickOf(this.pos)); this.heatCur = cur;
+    let from = 0, to = D.rounds.length - 1;
+    if (h.rounds.mode === 'current') from = to = cur;
+    else if (h.rounds.mode === 'range') { from = Math.max(0, h.rounds.from - 1); to = Math.min(to, h.rounds.to - 1); if (from > to) [from, to] = [to, from]; }
+    const sideOk = s => h.side === -1 || s === h.side;
+
+    if (h.layer === 'paths') {
+      for (let ri = from; ri <= to; ri++) {
+        const R = D.rounds[ri], f0 = this.frameOfTick(R.freezeEnd), f1 = Math.min(this.frameOfTick(R.end), this.nF - 1);
+        for (let f = f0; f <= f1; f++) {
+          const pl = F[f][1];
+          for (let i = 0; i < pl.length; i++) {
+            if (h.player >= 0 && i !== h.player) continue;
+            const q = pl[i];
+            if (!q || q[3] <= 0 || !sideOk(q[5])) continue;
+            add(q[0], q[1], q[2]);
+          }
+        }
+      }
+    } else {
+      const t0 = D.rounds[from].start, t1 = D.rounds[to].end, deaths = h.layer === 'deaths';
+      for (const k of D.kills) {
+        if (k[0] < t0 || k[0] > t1) continue;
+        const idx = this.nameIdx[deaths ? k[2] : k[1]];
+        if (idx == null || (h.player >= 0 && idx !== h.player) || !sideOk(deaths ? k[6] : k[5])) continue;
+        const fi = Math.min(this.frameOfTick(k[0]), this.nF - 1);
+        // a victim's last tracked position is where they fell; a killer is read from the frame just before the kill
+        const q = deaths ? (F[fi][1][idx] || (F[fi - 1] && F[fi - 1][1][idx])) : (F[Math.max(0, fi - 1)][1][idx] || F[fi][1][idx]);
+        if (q) add(q[0], q[1], q[2]);
+      }
+    }
+    this.heatN = n;
+    if (!n) { this.heatCanvas = null; return; }
+
+    // separable gaussian blur
+    const sigma = h.layer === 'paths' ? 2.2 : 4.5, R = Math.ceil(sigma * 3), ker = [];
+    let ks = 0; for (let i = -R; i <= R; i++) { const w = Math.exp(-(i * i) / (2 * sigma * sigma)); ker.push(w); ks += w; }
+    for (let i = 0; i < ker.length; i++) ker[i] /= ks;
+    const tmp = new Float32Array(N * N), out = new Float32Array(N * N);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let k = -R; k <= R; k++) { const xx = x + k; if (xx >= 0 && xx < N) s += grid[y * N + xx] * ker[k + R]; } tmp[y * N + x] = s; }
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { let s = 0; for (let k = -R; k <= R; k++) { const yy = y + k; if (yy >= 0 && yy < N) s += tmp[yy * N + x] * ker[k + R]; } out[y * N + x] = s; }
+
+    // scale to the 97th percentile of occupied cells so one hot spot cannot wash everything else out
+    const vals = []; for (let i = 0; i < out.length; i++) if (out[i] > 1e-4) vals.push(out[i]);
+    vals.sort((a, b) => a - b);
+    const top = vals.length ? vals[Math.min(vals.length - 1, Math.floor(vals.length * 0.97))] : 1;
+    const ramp = HEAT_RAMPS[h.layer];
+    const c = this.heatCanvas && this.heatCanvas.width === N ? this.heatCanvas : Object.assign(document.createElement('canvas'), { width: N, height: N });
+    const g = c.getContext('2d'), img = g.createImageData(N, N);
+    for (let i = 0; i < out.length; i++) {
+      const t = Math.min(1, out[i] / top);
+      if (t < 0.04) continue;
+      const [r, gg, b] = rampColor(ramp, t), o = i * 4;
+      img.data[o] = r; img.data[o + 1] = gg; img.data[o + 2] = b; img.data[o + 3] = Math.round(255 * Math.min(1, 0.25 + t) * 0.85);
+    }
+    g.putImageData(img, 0, 0);
+    this.heatCanvas = c;
+  }
 
   // ---------- drawing the map ----------
   draw() {
@@ -187,6 +286,7 @@ export class ReplayEngine {
     const want = this.imgs[this.level], img = want && want.complete && want.naturalWidth ? want : (this.imgs.upper && this.imgs.upper.complete ? this.imgs.upper : null);
     if (img) { ctx.globalAlpha = 0.9; ctx.drawImage(img, tl0[0], tl0[1], br[0] - tl0[0], br[1] - tl0[1]); ctx.globalAlpha = 1; }
     else { ctx.strokeStyle = '#222a35'; ctx.strokeRect(tl0[0], tl0[1], br[0] - tl0[0], br[1] - tl0[1]); }
+    if (this.heatCanvas) { ctx.imageSmoothingEnabled = true; ctx.drawImage(this.heatCanvas, tl0[0], tl0[1], br[0] - tl0[0], br[1] - tl0[1]); }
     const U = S * view.k;
 
     // utility effects
@@ -319,6 +419,7 @@ export class ReplayEngine {
       this.pos += dt * this.speed * TPS / this.step;
       if (this.pos >= this.nF - 1) { this.pos = this.nF - 1; this.playing = false; this.emit(); }
     }
+    if (this.heatDirty || (this.heat.layer !== 'off' && this.heat.rounds.mode === 'current' && this.roundIdx(this.tickOf(this.pos)) !== this.heatCur)) this.buildHeat();
     this.drawTL(); this.draw();
     if (ts - this.lastHud > 90) { this.lastHud = ts; this.emit(); }
     this.raf = requestAnimationFrame(t => this.loop(t));
@@ -334,7 +435,7 @@ export class ReplayEngine {
     let n = ri + d; if (d < 0 && this.tickOf(this.pos) - cur.start > TPS * 3) n = ri;
     n = Math.max(0, Math.min(this.D.rounds.length - 1, n)); this.pos = this.frameOfTick(this.D.rounds[n].start); this.emit();
   }
-  setOpt(k, v) { this[k] = v; this.emit(); }
+  setOpt(k, v) { this[k] = v; if (k === 'level') this.heatDirty = true; this.emit(); }
   resetView() { this.view = { cx: 0.5, cy: 0.5, k: 1 }; }
   selectPlayer(i) { this.selected = this.selected === i ? -1 : i; if (this.selected < 0) this.focus = false; this.emit(); }
   toggleFocus() { if (this.selected < 0) { const i = this.nearestPlayer(this.W / 2, this.H / 2); if (i >= 0) this.selected = i; } this.focus = !this.focus && this.selected >= 0; this.emit(); }

@@ -12,6 +12,7 @@ Status as of 2026-10-31. Effort: **S** = an evening, **M** = a few evenings, **L
 - [x] Matches / Players / Head to Head, date filter
 - [x] React static site, hosted on GitHub Pages
 - [x] In-browser parsing through a CS2-capable WASM parser; results kept on the visitor's device
+- [x] Death, kill and movement heatmaps in the replay (filter by side, player, rounds)
 - [x] Focus mode in the replay (click a player or press F; everyone else fades)
 - [x] Style guide and palette (`docs/STYLE-GUIDE.md`) and agent notes (`AGENTS.md`)
 - [x] No demo data is published: the public site is the app only, and demos stay in each visitor's browser
@@ -32,7 +33,7 @@ Status as of 2026-10-31. Effort: **S** = an evening, **M** = a few evenings, **L
 
 | Feature | What it needs | Effort |
 | --- | --- | --- |
-| **Death heatmap** and **movement-path heatmap** on the radar, filterable by player, side, round range | Paths: aggregate the replay frames. Deaths: add the victim's x/y to each kill (the parser already returns it). Render as a blurred density layer under the players. | M |
+| ~~Death heatmap and movement-path heatmap~~ | **Shipped** per demo. Still open: heatmaps across several demos on the same map (needs a per-map aggregate), and exact death positions from the event instead of the nearest tracked frame. | M |
 | **Economy screen**: how both teams' money and equipment shift across the match | The per-round equipment value and bank already exist. Needs spend per round, buy-type per round, and a chart (stacked area + round markers) on the Report page. | S–M |
 | **Gunfight analysis**: isolate each gunfight into a record and measure spray and aim | New parse data: `weapon_fire` events and per-tick view angles around each duel. Per fight: shots fired and hit, time to first damage, crosshair offset when the enemy became visible, flick distance and speed, spray length. Then classify: *mechanical* (spray, crosshair placement) vs *positioning / game sense* (looking where the enemy was not). | L |
 | **Trade and crossfire check**: when a player dies, could a teammate have seen the killer? | Compare each teammate's view direction and distance to the killer's position at the death tick, within a trade window. Without map geometry this is approximate (no line-of-sight), so label it as such; real visibility needs per-map data. | L |

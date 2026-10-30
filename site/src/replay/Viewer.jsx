@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { money, mapName } from '../lib/util.js';
-import { COLORS, ICONS, ReplayEngine, SN, drawIcon, reasonOf } from './engine.js';
+import { COLORS, HEAT_GRADIENT, ICONS, ReplayEngine, SN, drawIcon, reasonOf } from './engine.js';
 
 function IconBadge({ kind }) {
   const ref = useRef(null);
@@ -29,6 +29,41 @@ function TeamPanel({ side, cards, hdr, onSelect, focus }) {
   );
 }
 
+const HEAT_LAYERS = [['off', 'Off'], ['deaths', 'Deaths'], ['kills', 'Kills'], ['paths', 'Paths']];
+const HEAT_HELP = { deaths: 'where players died', kills: 'where kills were made from', paths: 'where players walked (after freeze time)' };
+
+function HeatPanel({ hud, names, eng }) {
+  const h = hud.heat, set = p => eng().setHeat(p), on = (a, b) => (a === b ? 'on' : '');
+  return (
+    <div className="rv-heat">
+      <div className="row">{HEAT_LAYERS.map(([k, label]) => <button key={k} className={on(h.layer, k)} onClick={() => set({ layer: k })}>{label}</button>)}</div>
+      {h.layer !== 'off' && (
+        <>
+          <div className="row"><span>Side</span>{[[-1, 'All'], [0, 'T'], [1, 'CT']].map(([v, label]) => <button key={v} className={on(h.side, v)} onClick={() => set({ side: v })}>{label}</button>)}</div>
+          <div className="row"><span>Player</span>
+            <select value={h.player} onChange={e => set({ player: +e.target.value })}>
+              <option value={-1}>Everyone</option>
+              {names.map((n, i) => <option key={i} value={i}>{n}</option>)}
+            </select>
+          </div>
+          <div className="row"><span>Rounds</span>
+            {[['all', 'All'], ['current', 'This round'], ['range', 'Range']].map(([m, label]) => <button key={m} className={on(h.rounds.mode, m)} onClick={() => set({ rounds: { mode: m } })}>{label}</button>)}
+          </div>
+          {h.rounds.mode === 'range' && (
+            <div className="row"><span />
+              <select value={h.rounds.from} onChange={e => set({ rounds: { from: +e.target.value } })}>{Array.from({ length: hud.nRounds }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}</select>
+              <span>to</span>
+              <select value={h.rounds.to} onChange={e => set({ rounds: { to: +e.target.value } })}>{Array.from({ length: hud.nRounds }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}</select>
+            </div>
+          )}
+          <div className="legend" style={{ background: HEAT_GRADIENT[h.layer] }} />
+          <div className="hint">{hud.heatN ? hud.heatN + ' points: ' + HEAT_HELP[h.layer] : 'No points for these filters'}</div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function RoundInfo({ r }) {
   const [ic, tx] = r.result ? reasonOf(r.result.reason) : [];
   const parts = [
@@ -47,6 +82,7 @@ function RoundInfo({ r }) {
 
 const EMPTY = {
   playing: false, speed: 2, drawOn: false, tool: 'pen', color: COLORS[0], trail: true, names: true, level: 'upper', hasLower: false, focus: false, selected: -1,
+  heat: { layer: 'off', side: -1, player: -1, rounds: { mode: 'all', from: 1, to: 1 } }, heatN: 0, nRounds: 1,
   clock: { big: '', small: '', bomb: false, round: 1, total: 1 }, scoreT: 0, scoreCT: 0, teamT: '', teamCT: '',
   cards: [[], []], hdr: [null, null], feed: [], rinfo: { n: 1, kills: 0, total: 0, multi: [], clutch: [], entry: null, result: null },
 };
@@ -55,6 +91,7 @@ export default function Viewer({ data, radar, slug }) {
   const cvRef = useRef(null), tlRef = useRef(null), eng = useRef(null);
   const [live, setHud] = useState(null);
   const [tip, setTip] = useState(null);
+  const [heatOpen, setHeatOpen] = useState(false);
 
   useEffect(() => {
     const e = new ReplayEngine(data, radar, cvRef.current, tlRef.current, setHud);
@@ -73,6 +110,7 @@ export default function Viewer({ data, radar, slug }) {
       else if (k === '.') e.jumpRound(1);
       else if (k === ',') e.jumpRound(-1);
       else if (k === 'f' || k === 'F') e.toggleFocus();
+      else if (k === 'h' || k === 'H') setHeatOpen(o => !o);
     };
     window.addEventListener('keydown', onKey);
     return () => { window.removeEventListener('keydown', onKey); ro.disconnect(); e.destroy(); eng.current = null; };
@@ -100,6 +138,7 @@ export default function Viewer({ data, radar, slug }) {
             <button className={hud.names ? 'on' : ''} onClick={() => E().setOpt('names', !hud.names)}>Names</button>
             {hud.hasLower && <button onClick={() => E().setOpt('level', hud.level === 'upper' ? 'lower' : 'upper')}>Level: {hud.level}</button>}
             <button className={hud.focus ? 'on' : ''} title="Fade everyone but the selected player (F). Click a player to select." onClick={() => E().toggleFocus()}>Focus</button>
+            <button className={hud.heat.layer !== 'off' ? 'on' : heatOpen ? 'on' : ''} title="Heatmaps of deaths, kills and paths (H)" onClick={() => setHeatOpen(o => !o)}>Heatmap</button>
             <button onClick={() => E().resetView()}>Reset view</button>
             <button className={hud.drawOn ? 'on' : ''} title="Draw on the paused frame (D)" onClick={() => E().setDraw(!hud.drawOn)}>✏ Draw</button>
           </div>
@@ -115,6 +154,7 @@ export default function Viewer({ data, radar, slug }) {
               <span className="hint">Stays on this frame</span>
             </div>
           )}
+          {heatOpen && <HeatPanel hud={hud} names={data.names} eng={E} />}
           <div className="rv-feed">
             {hud.feed.map((k, i) => (
               <div key={i}>
@@ -139,7 +179,7 @@ export default function Viewer({ data, radar, slug }) {
           </select>
           <span className="muted">x speed</span>
           <span className="sp" />
-          <span className="muted"><kbd>Space</kbd> play · <kbd>←</kbd><kbd>→</kbd> 5s · <kbd>,</kbd><kbd>.</kbd> round · <kbd>D</kbd> draw · <kbd>F</kbd> focus · wheel zoom · drag pan</span>
+          <span className="muted"><kbd>Space</kbd> play · <kbd>←</kbd><kbd>→</kbd> 5s · <kbd>,</kbd><kbd>.</kbd> round · <kbd>D</kbd> draw · <kbd>F</kbd> focus · <kbd>H</kbd> heatmap · wheel zoom · drag pan</span>
         </div>
         <div className="rv-tlwrap">
           <canvas ref={tlRef}

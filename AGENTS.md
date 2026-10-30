@@ -27,7 +27,7 @@ cd site && npm run build        # static build in site/dist (Pages workflow does
 
 - `site/src/parser/analyse.js` — the one analysis implementation, shared by the CLI and the browser. It must stay free of Node- and DOM-specific APIs. Changes to its output shape must be reflected in `docs/ARCHITECTURE.md` (Data files).
 - `site/src/parser/worker.js` + `wasm/` — browser parsing. The WASM is a locally patched upstream build; see `wasm/README.md` before touching it.
-- `site/src/replay/engine.js` — canvas, camera, playback, drawing, timeline (imperative). `Viewer.jsx` is the React shell and receives a `hud` snapshot. Keep per-frame work out of React state.
+- `site/src/replay/engine.js` — canvas, camera, playback, drawing, heatmaps, timeline (imperative). `Viewer.jsx` is the React shell and receives a `hud` snapshot. Keep per-frame work out of React state.
 - `site/src/pages/` — Home (Matches / Players / Head to Head), Report, Replay.
 
 ## Conventions

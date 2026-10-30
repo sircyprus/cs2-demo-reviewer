@@ -50,11 +50,19 @@ Open with **▶ Replay**. The map shows every player (T orange, CT blue) with vi
 | , / . | Previous / next round |
 | Mouse wheel, drag | Zoom, pan (**Reset view** to recentre) |
 | F | Focus mode on the selected player |
+| H | Show / hide the heatmap panel |
 | D | Toggle drawing (while paused) |
 | Esc | Leave drawing |
 | Ctrl+Z | Undo last drawing |
 
 **Focus mode:** click a player on the map or a player card to select them, then press **Focus** (or **F**). Everyone else fades and shrinks (no cone or name) and the selected player gets a longer trail, so you can follow one person's round. Click the player again, or press F, to switch it off.
+
+**Heatmaps:** press **Heatmap** (or **H**) to overlay one of three layers on the radar:
+- **Deaths**: where players died.
+- **Kills**: where the killer stood when they made the kill.
+- **Paths**: where players walked, from the end of freeze time to the end of each round.
+
+Filter by side (All / T / CT, using the side each player was on at the time), by player, and by rounds (all, this round, or a range). The panel shows how many points are plotted. Colours are scaled so the busiest areas stand out without hiding everything else. On two-level maps the heatmap follows the Level button. Death positions come from the last tracked position of the victim, so they can be a few units off.
 
 **Top bar:** score, round clock (freeze time, 1:55 round timer, 40 s bomb countdown) and the round number.
 
