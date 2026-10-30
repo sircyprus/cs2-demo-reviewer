@@ -243,10 +243,10 @@ kbd{background:var(--glass2);border:1px solid var(--line);border-radius:6px;padd
 :root[data-theme='holo'] table{border-radius:22px}
 :root[data-theme='holo'] th{text-transform:lowercase;letter-spacing:.04em;font-size:12px}
 
-/* matches: the radar lives in an iridescent egg with three pink pearl buttons underneath */
+/* matches: the radar lives in an iridescent device screen with three pink pearl buttons underneath */
 :root[data-theme='holo'] .m{padding:16px 18px;gap:16px}
 :root[data-theme='holo'] .egg{display:flex;flex-direction:column;align-items:center;gap:10px;flex:none}
-:root[data-theme='holo'] .m .th{position:relative;width:100px;height:122px;margin:8px 10px 0;border:4px solid #fff;border-radius:50% 50% 48% 48%/56% 56% 44% 44%;box-shadow:var(--ring),0 12px 24px rgba(90,20,150,.4),inset 0 0 20px rgba(255,255,255,.35)}
+:root[data-theme='holo'] .m .th{position:relative;width:108px;height:108px;margin:8px 10px 0;border:4px solid #fff;border-radius:24px;box-shadow:var(--ring),0 12px 24px rgba(90,20,150,.4),inset 0 0 20px rgba(255,255,255,.35)}
 :root[data-theme='holo'] .m .th::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(255,255,255,.55),transparent 34%,transparent 66%,rgba(255,200,240,.35))}
 :root[data-theme='holo'] .pearls{display:flex;gap:8px;margin-top:4px}
 :root[data-theme='holo'] .pearls i{display:block;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff 0 10%,#ffd1ee 26%,#ee6fd6 66%,#a82a9b);box-shadow:0 2px 4px rgba(90,20,150,.45),inset 0 -2px 3px rgba(120,0,110,.35)}
@@ -288,7 +288,7 @@ kbd{background:var(--glass2);border:1px solid var(--line);border-radius:6px;padd
   :root[data-theme='holo'] h1{font-size:22px}
   :root[data-theme='holo'] .stat b{font-size:30px}
   :root[data-theme='holo'] .m{padding:12px}
-  :root[data-theme='holo'] .m .th{width:78px;height:96px;margin:4px 4px 0}
+  :root[data-theme='holo'] .m .th{width:78px;height:78px;margin:4px 4px 0}
 }
 @media(prefers-reduced-motion:reduce){
   :root[data-theme='holo'] body,:root[data-theme='holo'] body::before,:root[data-theme='holo'] h1{animation:none}
@@ -299,8 +299,8 @@ kbd{background:var(--glass2);border:1px solid var(--line);border-radius:6px;padd
 /* original SVG art */
 .hero-art{display:none}
 .empty::before{content:none}
-:root[data-theme='holo'] .hero-art{display:block;position:absolute;right:56px;top:-46px;height:236px;width:auto;z-index:2;pointer-events:none;filter:drop-shadow(0 22px 26px rgba(90,20,150,.42));animation:holo-float 6s ease-in-out infinite alternate}
-:root[data-theme='holo'] .top{padding-right:230px}
+:root[data-theme='holo'] .hero-art{display:block;position:absolute;right:44px;top:-44px;height:206px;width:auto;z-index:2;pointer-events:none;filter:drop-shadow(0 22px 26px rgba(90,20,150,.42));animation:holo-float 6s ease-in-out infinite alternate}
+:root[data-theme='holo'] .top{padding-right:270px}
 :root[data-theme='holo'] .empty::before{content:'';display:block;width:45px;height:40px;margin:0 auto 12px;background:url(./assets/art/pixel-heart.svg) center/contain no-repeat;image-rendering:pixelated;filter:drop-shadow(0 2px 0 #fff)}
 @media(max-width:900px){:root[data-theme='holo'] .hero-art{display:none}:root[data-theme='holo'] .top{padding-right:0}}
 @media(prefers-reduced-motion:reduce){:root[data-theme='holo'] .hero-art{animation:none}}

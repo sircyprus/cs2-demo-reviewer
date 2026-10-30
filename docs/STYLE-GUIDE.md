@@ -35,7 +35,7 @@ Set with `data-theme` on `<html>` (`lib/theme.js`, toggled by `ThemeToggle`, rem
 
 - **Backdrop**: aurora of magenta, violet, sky blue and coral (`--page`) that drifts slowly, with soft white clouds, twinkling white sparkles and a faint film grain; the whole app sits in a frosted rounded "device window" (the `.page` element) with chrome four-point stars on its corners.
 - **LCD readouts**: stat tiles, the score pills and the round clock use VT323 on a pale green-grey LCD (`--lcd`, `--lcd-ink`) with a white bezel, like a handheld pet.
-- **Egg screens**: match cards show the radar in an egg-shaped screen with stacked pink / lilac / sky rings and three pink pearl buttons underneath.
+- **Device screens**: match cards show the radar in a rounded screen with stacked pink / lilac / sky rings and three pink pearl buttons underneath, like the C4 keypad.
 - **Window halo**: the pastel ring (`--ring`) around the window, the replay HUD and the bottom bar.
 - **Motion**: headings shimmer, buttons get a light sweep on hover, cards lift. All of it stops under `prefers-reduced-motion`.
 - **Holographic bezels**: the replay map and the timeline use a conic gradient border (`--holo`: pink, lilac, sky, mint, peach).
@@ -48,7 +48,8 @@ All artwork is original SVG drawn for this project, in `site/src/assets/art/`. T
 
 | File | Use |
 | --- | --- |
-| `holo-egg.svg` | The home-page hero: an iridescent handheld "map pager" with a pixel crosshair and score on its LCD, pearl buttons, gems and chrome stars. It hangs over the window's top-right edge and floats gently. |
+| `holo-c4.svg` | The home-page hero: a candy-coloured **C4** with a pixel "0:40" on its LCD, a pearl keypad, chrome straps, coloured wires and a chrome star. It hangs over the window's top-right edge and floats gently. |
+| `holo-deagle.svg` | A chrome-and-pink **Desert Eagle**. Drawn as an alternative hero; not used yet. |
 | `chrome-star.svg` | Four-point chrome star: window corners, heading bullets. |
 | `bubble.svg` | Soap bubble with an iridescent rim, scattered in the page background. |
 | `pixel-heart.svg` | Empty states. |
