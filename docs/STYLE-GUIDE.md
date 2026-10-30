@@ -76,8 +76,16 @@ Side colours (T/CT) are for in-game things only (players, rounds, kill feed). Te
 - Colour is never the only signal: round outcomes also use icons, deaths use an X, selected cards get an outline.
 - There is no autoplaying decoration; the only transition is a 2 px lift on hover.
 
+## Art
+
+Original SVG drawn for this project, in `site/src/assets/art/` (no third-party images; nothing to attribute).
+
+| File | Use |
+| --- | --- |
+| `c4.svg` | Home-page hero: a candy-coloured **C4** with a pixel "0:40" LCD, a pearl keypad, chrome straps, coloured wires and a chrome star. Sits beside the title on screens 1000 px and wider and floats gently. |
+
 ## History
 
-Earlier iterations (a dark "night" theme and an iridescent "holo" look with a C4 bomb hero, LCD readouts and a theme toggle) were removed in favour of this single look. They are recoverable from git history (commit `bc04323`) if needed.
+Earlier iterations (a dark "night" theme and an iridescent "holo" look with LCD readouts and a theme toggle) were removed in favour of this single look; the C4 hero from that work was kept and restyled for it. They are recoverable from git history (commit `bc04323`) if needed.
 
 When adding UI: use a token; if you need a new colour, add it here first.

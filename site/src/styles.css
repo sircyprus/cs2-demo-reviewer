@@ -159,3 +159,9 @@ summary{cursor:pointer;font-weight:700}.k{margin-left:18px;color:var(--ink);padd
 .rv-tip{position:fixed;pointer-events:none;background:rgba(30,6,40,.92);color:#fdeaf7;padding:4px 10px;border-radius:99px;font-size:12px;z-index:10;border:1px solid var(--p3)}
 kbd{background:var(--glass2);border:1px solid var(--line);border-radius:6px;padding:0 5px;font-size:11px;color:var(--mut);font-family:inherit;font-weight:700}
 @media(max-width:900px){.rv-mid{grid-template-columns:1fr}.rv-col{display:none}.grid{grid-template-columns:1fr}.page{padding:16px}}
+
+/* hero: the candy C4 beside the title (wide screens only) */
+.hero-art{display:none}
+@keyframes float{from{transform:translateY(0) rotate(-1.5deg)}to{transform:translateY(-8px) rotate(1.5deg)}}
+@media(min-width:1000px){.hero-art{display:block;height:168px;width:auto;flex:none;margin:-16px 0 -26px;pointer-events:none;filter:drop-shadow(0 14px 18px rgba(142,30,162,.35));animation:float 6s ease-in-out infinite alternate}}
+@media(prefers-reduced-motion:reduce){.hero-art{animation:none}}

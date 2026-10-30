@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import AddDemos from '../components/AddDemos.jsx';
+import heroArt from '../assets/art/c4.svg';
 import { deleteDemo, listLocal } from '../lib/store.js';
 import { useSearchParams } from 'react-router-dom';
 import { asset, useJson } from '../lib/data.js';
@@ -88,6 +89,7 @@ export default function Home() {
           <h1>CS2 Demo Reviewer</h1>
           <div className="muted">Demos are read in your browser. Nothing is uploaded.</div>
         </div>
+        <img className="hero-art" src={heroArt} alt="" />
         <div className="stats">
           {stats.map(([label, v]) => <div className="stat" key={label}><b>{v}</b><span>{label}</span></div>)}
         </div>
