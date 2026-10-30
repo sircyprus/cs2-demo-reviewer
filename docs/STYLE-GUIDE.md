@@ -42,6 +42,19 @@ Set with `data-theme` on `<html>` (`lib/theme.js`, toggled by `ThemeToggle`, rem
 - **Buttons**: pink gel for active tabs, chips and toggles; **lime** (`#d8f66e` family) is reserved for the single main action on a card (`.btn.pri`). Lime is the one colour outside the palette family; it is borrowed from the reference and is not used anywhere else.
 - **Type**: Unbounded (700, 900) lowercase headings, Quicksand body, VT323 for numbers.
 
+### Art assets
+
+All artwork is original SVG drawn for this project, in `site/src/assets/art/`. There are no third-party images, textures or icon packs, so there is nothing to attribute. Fonts come from `@fontsource` (SIL Open Font License).
+
+| File | Use |
+| --- | --- |
+| `holo-egg.svg` | The home-page hero: an iridescent handheld "map pager" with a pixel crosshair and score on its LCD, pearl buttons, gems and chrome stars. It hangs over the window's top-right edge and floats gently. |
+| `chrome-star.svg` | Four-point chrome star: window corners, heading bullets. |
+| `bubble.svg` | Soap bubble with an iridescent rim, scattered in the page background. |
+| `pixel-heart.svg` | Empty states. |
+
+When adding art: draw it as SVG with the palette plus the holo accents, keep each file under about 10 KB, and add it to this table.
+
 ## Data colours
 
 These carry meaning in the game and are tuned per theme for contrast; they are *not* brand colours.
