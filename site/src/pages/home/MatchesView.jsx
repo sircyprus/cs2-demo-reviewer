@@ -50,10 +50,7 @@ export default function MatchesView({ demos, q, setQ, onRemove }) {
         <div className="grid">
           {list.map(d => (
             <div className="m" key={d.slug}>
-              <div className="egg">
-                <div className="th" style={{ backgroundImage: `url(${asset('maps/' + d.map + '.png')})` }} />
-                <div className="pearls"><i /><i /><i /></div>
-              </div>
+              <div className="th" style={{ backgroundImage: `url(${asset('maps/' + d.map + '.png')})` }} />
               <div className="bd">
                 <div className="hd">
                   <span className="mp">{mapName(d.map)}</span>

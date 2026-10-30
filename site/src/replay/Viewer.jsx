@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { money, mapName } from '../lib/util.js';
-import ThemeToggle from '../components/ThemeToggle.jsx';
 import { COLORS, HEAT_GRADIENT, ICONS, ReplayEngine, SN, drawIcon, reasonOf } from './engine.js';
 
 function IconBadge({ kind }) {
@@ -127,7 +126,7 @@ export default function Viewer({ data, radar, slug }) {
         <div className="rv-team T"><span>{hud.scoreT}</span><small>{hud.teamT}</small></div>
         <div className={'rv-clock' + (hud.clock.bomb ? ' bomb' : '')}><b>{hud.clock.big}</b><div>Round {hud.clock.round} / {hud.clock.total} · {hud.clock.small}</div></div>
         <div className="rv-team CT"><small>{hud.teamCT}</small><span>{hud.scoreCT}</span></div>
-        <div className="meta"><span>{mapName(data.map)}</span><ThemeToggle /></div>
+        <div className="meta">{mapName(data.map)}</div>
       </div>
 
       <div className="rv-mid">

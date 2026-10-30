@@ -1,8 +1,8 @@
 # Style guide
 
-A Y2K look: glossy candy buttons, frosted glass, bubble highlights, chrome-style headings and a rounded type pairing. It is built directly on one four-colour palette and comes in two themes that share every rule.
+One look: **bubblegum Y2K**. Glossy candy buttons, frosted glass, bubble highlights, chrome-style headings and a rounded type pairing, built directly on one four-colour palette. There are no other themes and no theme switch.
 
-Mockups of both themes: `docs/mockups/bubblegum.html` and `night.html` (they use the real stylesheet, see `docs/mockups/README.md`).
+Mockup: `docs/mockups/bubblegum.html` (it uses the real stylesheet, see `docs/mockups/README.md`).
 
 ## Palette
 
@@ -10,78 +10,50 @@ From Color Hunt: https://colorhunt.co/palette/8e1ea2c654c3ed96d7ffc0de
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| `--p1` | `#8E1EA2` | Deep: primary-button base, headings, text accent on light surfaces |
+| `--p1` | `#8E1EA2` | Deep: primary-button base, headings, text accent |
 | `--p2` | `#C654C3` | Strong: borders, focus rings, hover, the stage frame |
-| `--p3` | `#ED96D7` | Soft: highlights, night-theme accent and links |
-| `--p4` | `#FFC0DE` | Pale: the page background of the light theme, glass tint, night-theme headings |
+| `--p3` | `#ED96D7` | Soft: highlights and the page gradient |
+| `--p4` | `#FFC0DE` | Pale: the page background, glass tint |
 
 Everything else is derived from these. All values are CSS variables in `site/src/styles.css`; use them, never raw hex, in components.
 
-## Themes
+## Surfaces and text
 
-Three themes: **holo** (default), **bubblegum** (light) and **night** (dark neon). Holo is the iridescent device look, inspired by the Y2K "Glow Up" Dribbble shot: https://dribbble.com/shots/27686678-Glow-Up-Y2K-Landing-Page-for-a-Wellness-App.
-
-Set with `data-theme` on `<html>` (`lib/theme.js`, toggled by `ThemeToggle`, remembered in localStorage).
-
-| | **bubblegum** (default, light) | **night** (dark) |
+| Token | Value | Role |
 | --- | --- | --- |
-| Page | Gradient `#ffd9ec → #FFC0DE → #f4a8e0 → #e48ad6` | Gradient `#12031a → #240a33 → #3b0f4d` |
-| Surfaces | White glass 58 % with a white border | Pink-tinted glass 7 % with a pink border |
-| Text / muted | `#3a0f46` / `#7d3f8b` | `#fdeaf7` / `#cba3d8` |
-| Links, accents | `--p1` | `--p3` / `--p4` |
-| Stage (behind the map) | `#26092f` | `#14041b` |
-
-### Holo specifics
-
-- **Backdrop**: aurora of magenta, violet, sky blue and coral (`--page`) that drifts slowly, with soft white clouds, twinkling white sparkles and a faint film grain; the whole app sits in a frosted rounded "device window" (the `.page` element) with chrome four-point stars on its corners.
-- **LCD readouts**: stat tiles, the score pills and the round clock use VT323 on a pale green-grey LCD (`--lcd`, `--lcd-ink`) with a white bezel, like a handheld pet.
-- **Device screens**: match cards show the radar in a rounded screen with stacked pink / lilac / sky rings and three pink pearl buttons underneath, like the C4 keypad.
-- **Window halo**: the pastel ring (`--ring`) around the window, the replay HUD and the bottom bar.
-- **Motion**: headings shimmer, buttons get a light sweep on hover, cards lift. All of it stops under `prefers-reduced-motion`.
-- **Holographic bezels**: the replay map and the timeline use a conic gradient border (`--holo`: pink, lilac, sky, mint, peach).
-- **Buttons**: pink gel for active tabs, chips and toggles; **lime** (`#d8f66e` family) is reserved for the single main action on a card (`.btn.pri`). Lime is the one colour outside the palette family; it is borrowed from the reference and is not used anywhere else.
-- **Type**: Unbounded (700, 900) lowercase headings, Quicksand body, VT323 for numbers.
-
-### Art assets
-
-All artwork is original SVG drawn for this project, in `site/src/assets/art/`. There are no third-party images, textures or icon packs, so there is nothing to attribute. Fonts come from `@fontsource` (SIL Open Font License).
-
-| File | Use |
-| --- | --- |
-| `holo-c4.svg` | The home-page hero: a candy-coloured **C4** with a pixel "0:40" on its LCD, a pearl keypad, chrome straps, coloured wires and a chrome star. It hangs over the window's top-right edge and floats gently. |
-| `holo-deagle.svg` | A chrome-and-pink **Desert Eagle**. Drawn as an alternative hero; not used yet. |
-| `chrome-star.svg` | Four-point chrome star: window corners, heading bullets. |
-| `bubble.svg` | Soap bubble with an iridescent rim, scattered in the page background. |
-| `pixel-heart.svg` | Empty states. |
-
-When adding art: draw it as SVG with the palette plus the holo accents, keep each file under about 10 KB, and add it to this table.
+| `--page` | Gradient `#ffd9ec → #FFC0DE → #f4a8e0 → #e48ad6` | Page background |
+| `--glass` / `--glass2` | White at 58 % / 82 % | Cards, bars, inputs |
+| `--glass-line` | White at 90 % | Card borders |
+| `--line` | `rgba(142,30,162,.28)` | Dividers |
+| `--ink` / `--mut` | `#3a0f46` / `#7d3f8b` | Text / secondary text |
+| `--stage` | `#26092f` | Behind the replay map and timeline |
 
 ## Data colours
 
-These carry meaning in the game and are tuned per theme for contrast; they are *not* brand colours.
+These carry meaning in the game and are tuned for contrast on the light glass; they are *not* brand colours.
 
-| Meaning | bubblegum | night |
-| --- | --- | --- |
-| Terrorist (`--T`) | `#b45f06` | `#f0b25b` |
-| Counter-Terrorist (`--CT`) | `#1d5fd0` | `#6fb3ff` |
-| Team A (`--A`) | `#a3157f` | `#ED96D7` |
-| Team B (`--B`) | `#0b7f78` | `#6fd9cf` |
-| Good / Bad / Warning | `#1e8e4e` / `#c0352d` / `#a87400` | `#4fd37a` / `#ff6b5f` / `#f0c24b` |
+| Meaning | Value |
+| --- | --- |
+| Terrorist (`--T`) | `#b45f06` |
+| Counter-Terrorist (`--CT`) | `#1d5fd0` |
+| Team A (`--A`) | `#a3157f` |
+| Team B (`--B`) | `#0b7f78` |
+| Good / Bad / Warning | `#1e8e4e` / `#c0352d` / `#a87400` |
 
-Side colours (T/CT) are for in-game things only (players, rounds, kill feed). Team colours (A/B) are for scoreboards and head-to-head. The canvas draws players with brighter fixed T/CT colours because it always sits on the dark stage.
+Side colours (T/CT) are for in-game things only (players, rounds, kill feed). Team colours (A/B) are for scoreboards and head-to-head. The replay canvas draws players with brighter fixed T/CT colours because it always sits on the dark stage.
 
 ## Type
 
-- **Orbitron** (700, 900) for the logo, headings, big numbers, the round clock: the Y2K voice. Uppercase with wide tracking for h1/h2.
-- **Quicksand** (500, 700) for everything else: rounded, friendly, readable at 11–14 px.
+- **Orbitron** (700, 900) for the logo, headings, big numbers and the round clock: the Y2K voice. Uppercase with wide tracking for h1/h2.
+- **Quicksand** (500, 700) for everything else: rounded and readable at 11-14 px.
 - Both are self-hosted through `@fontsource`, so the site makes no third-party requests. Orbitron's zero is slashed; for scores that must read as plain numbers (the replay HUD) use Quicksand.
 
 ## Shape and effects
 
-- Pills for anything clickable (radius 99 px); 16–22 px radius on cards, 12 px on inner tiles.
+- Pills for anything clickable (radius 99 px); 16-22 px radius on cards, 12 px on inner tiles.
 - **Glass**: translucent fill, 2 px light border, soft purple shadow, `backdrop-filter: blur(10px)`, 1 px inner top highlight.
-- **Candy buttons**: vertical gradient with a hard edge at 50 % (`--btn-top/mid/low/bot`), 1 px border, glow, white text-shadow. Primary/active buttons use the `--pri-*` set (deep purple with a pink highlight) and white text.
-- **Monitors**: the replay map and the timeline sit in dark "screens" with a 3 px white bezel plus a `--p2` ring, so map colours stay readable on either theme.
+- **Candy buttons**: vertical gradient with a hard edge at 50 % (`--btn-*`), 1 px border, glow, white text-shadow. Primary and active buttons use the `--pri-*` set (deep purple with a pink highlight) and white text.
+- **Monitors**: the replay map and the timeline sit in dark screens with a 3 px white bezel plus a `--p2` ring, so map colours stay readable.
 - **Sparkle**: the heading star (✦) and a few tiny white bubbles and glows in the page background. Keep decoration in the background layer; never put it behind text.
 
 ## Components
@@ -95,13 +67,17 @@ Side colours (T/CT) are for in-game things only (players, rounds, kill feed). Te
 
 - Players: side-coloured dot, dark halo, health ring (green > 50, amber > 25, red below), view cone, white name with a black shadow.
 - Focus mode: others fade to 35 % at 70 % size without cone or name; the focused player is 15 % larger with a longer trail and a white ring.
-- Heatmap ramps: paths use the palette (`#8E1EA2 → #C654C3 → #ED96D7 → #FFC0DE`), deaths red → amber → cream, kills teal; transparent under 4 % intensity.
+- Heatmap ramps: paths use the palette (`#8E1EA2 → #C654C3 → #ED96D7 → #FFC0DE`), deaths red to amber to cream, kills teal; transparent under 4 % intensity.
 - Utility: smoke grey, fire orange, flash white ring, HE red ring. Annotation colours: `#ff4d3d`, `#ffd23f`, `#4fd37a`, `#ffffff`, `#4cc9f0`.
 
 ## Accessibility
 
-- Text on glass is at least 4.5:1 in both themes (checked by eye on the mockups; re-check when changing a token). `--p3`-coloured text is only used in the night theme; on the light theme use `--p1`.
+- Text on glass is at least 4.5:1 (checked by eye on the mockup; re-check when changing a token). `--p3` is for fills and highlights, not small text.
 - Colour is never the only signal: round outcomes also use icons, deaths use an X, selected cards get an outline.
-- `prefers-reduced-motion`: there is no autoplaying decoration; the only transition is a 2 px lift on hover.
+- There is no autoplaying decoration; the only transition is a 2 px lift on hover.
 
-When adding UI: use a token; if you need a new colour, add it here and in both themes first.
+## History
+
+Earlier iterations (a dark "night" theme and an iridescent "holo" look with a C4 bomb hero, LCD readouts and a theme toggle) were removed in favour of this single look. They are recoverable from git history (commit `bc04323`) if needed.
+
+When adding UI: use a token; if you need a new colour, add it here first.

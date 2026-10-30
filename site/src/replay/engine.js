@@ -74,11 +74,8 @@ export class ReplayEngine {
     // heatmap overlay: layer off|deaths|kills|paths, side -1|0|1, player -1|index, rounds all|current|range
     this.heat = { layer: 'off', side: -1, player: -1, rounds: { mode: 'all', from: 1, to: D.rounds.length } };
     this.heatDirty = false; this.heatCanvas = null; this.heatN = 0; this.heatCur = -1;
-    // canvas background follows the theme's --stage colour
-    this.readTheme = () => { this.stage = getComputedStyle(document.documentElement).getPropertyValue('--stage').trim() || '#26092f'; };
-    this.readTheme();
-    this.themeObs = new MutationObserver(this.readTheme);
-    this.themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    // canvas background matches the --stage colour from the stylesheet
+    this.stage = getComputedStyle(document.documentElement).getPropertyValue('--stage').trim() || '#26092f';
     this.drawOn = false; this.tool = 'pen'; this.color = COLORS[0]; this.cur = null; this.ann = {};
     this.drag = null; this.tlDrag = false;
     this.nameIdx = {}; D.names.forEach((n, i) => { this.nameIdx[n] = i; });
@@ -523,7 +520,7 @@ export class ReplayEngine {
   }
 
   destroy() {
-    cancelAnimationFrame(this.raf); this.themeObs.disconnect();
+    cancelAnimationFrame(this.raf);
     this.cv.removeEventListener('wheel', this.h.wheel);
     this.cv.removeEventListener('mousedown', this.h.down);
     this.tl.removeEventListener('mousedown', this.h.tlDown);
