@@ -82,6 +82,7 @@ Original SVG drawn for this project, in `site/src/assets/art/` (no third-party i
 
 | File | Use |
 | --- | --- |
+| `logo.svg` | The **Masturbatorium** wordmark: bubble-graffiti lettering (puffy pink fill with a gloss, deep-purple outline and extrusion, white sparkles), built from Modak outlines by `tools/logo/make-logo.cjs`. Used in the home-page header; also the favicon (`m`). |
 | `c4.svg` | Home-page hero: a candy-coloured **C4** with a pixel "0:40" LCD, a pearl keypad, chrome straps, coloured wires and a chrome star. Sits beside the title on screens 1000 px and wider and floats gently. |
 
 ## History

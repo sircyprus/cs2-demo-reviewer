@@ -165,3 +165,8 @@ kbd{background:var(--glass2);border:1px solid var(--line);border-radius:6px;padd
 @keyframes float{from{transform:translateY(0) rotate(-1.5deg)}to{transform:translateY(-8px) rotate(1.5deg)}}
 @media(min-width:1000px){.hero-art{display:block;height:168px;width:auto;flex:none;margin:-16px 0 -26px;pointer-events:none;filter:drop-shadow(0 14px 18px rgba(142,30,162,.35));animation:float 6s ease-in-out infinite alternate}}
 @media(prefers-reduced-motion:reduce){.hero-art{animation:none}}
+
+/* wordmark logo replaces the text heading on the home page */
+h1.logo{margin:0 0 4px;background:none;filter:none;color:inherit;-webkit-text-fill-color:initial;letter-spacing:0}
+h1.logo::before{content:none}
+h1.logo img{display:block;height:68px;width:auto;max-width:100%}

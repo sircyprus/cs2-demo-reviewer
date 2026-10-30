@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import AddDemos from '../components/AddDemos.jsx';
 import heroArt from '../assets/art/c4.svg';
+import logo from '../assets/logo.svg';
 import { deleteDemo, listLocal } from '../lib/store.js';
 import { useSearchParams } from 'react-router-dom';
 import { asset, useJson } from '../lib/data.js';
@@ -87,7 +88,7 @@ export default function Home() {
     <div className="page">
       <div className="top">
         <div>
-          <h1>Masturbatorium</h1>
+          <h1 className="logo"><img src={logo} alt="Masturbatorium" /></h1>
           <div className="muted">A CS2 demo reviewer. Demos are read in your browser; nothing is uploaded.</div>
         </div>
         <img className="hero-art" src={heroArt} alt="" />
