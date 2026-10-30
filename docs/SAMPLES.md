@@ -21,6 +21,15 @@ PGL Masters Bucharest 2026 (31 Oct 2026), demos via HLTV.org:
 
 Team names come from the demos themselves; the match dates, titles and credit line come from `samples.json`.
 
+## Map coverage
+
+The goal is at least one pro demo for every map in the active-duty pool. As of October 2026 the pool is Ancient, Anubis, Cache, Dust 2, Inferno, Mirage and Nuke (Cache replaced Overpass on 8 July 2026).
+
+| Map | Sample |
+| --- | --- |
+| Cache, Dust 2, Mirage, Nuke | yes |
+| Ancient, Anubis, Inferno | **missing** |
+
 ## Adding or replacing samples
 
 1. Download the match demos from HLTV in your own browser (it has a human check) and extract them. HLTV serves `.rar` archives; Windows 11 can extract them with `tar -xf file.rar`, or use 7-Zip.

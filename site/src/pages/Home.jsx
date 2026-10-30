@@ -43,7 +43,7 @@ function DateBar({ range, setRange, demos, shown }) {
 export default function Home() {
   const { data, error } = useJson(asset('data/index.json'));
   const samples = useJson(asset('samples/index.json'));
-  const [showSamples, setShowSamples] = useState(true);
+  const [source, setSource] = useState('all'); // all | mine | samples
   const [sp, setSp] = useSearchParams();
   const tab = sp.get('tab') || 'm';
   const setTab = t => setSp(t === 'm' ? {} : { tab: t }, { replace: true });
@@ -63,9 +63,10 @@ export default function Home() {
     return [...built, ...local.filter(d => !seen.has(d.slug))];
   }, [data, samples.data, local]);
   const hasSamples = all.some(d => d.sample);
+  const counts = { all: all.length, mine: all.filter(d => !d.sample).length, samples: all.filter(d => d.sample).length };
   const visible = useMemo(
-    () => all.filter(d => (showSamples || !d.sample) && ((!range.from && !range.to) || (d.date && (!range.from || d.date >= range.from) && (!range.to || d.date < range.to + DAY)))),
-    [all, range, showSamples]
+    () => all.filter(d => (source === 'all' || (source === 'samples') === !!d.sample) && ((!range.from && !range.to) || (d.date && (!range.from || d.date >= range.from) && (!range.to || d.date < range.to + DAY)))),
+    [all, range, source]
   );
   const stats = useMemo(() => {
     const pl = new Set(); let rounds = 0;
@@ -99,9 +100,12 @@ export default function Home() {
 
       <DateBar range={range} setRange={setRange} demos={all} shown={visible.length} />
       {hasSamples && (
-        <label className="bar muted" style={{ marginTop: -6 }}>
-          <input type="checkbox" checked={showSamples} onChange={e => setShowSamples(e.target.checked)} /> include sample pro demos (public tournament matches, credited on each card)
-        </label>
+        <div className="bar">
+          <span className="muted">Show</span>
+          {[['all', 'All demos'], ['mine', 'My demos'], ['samples', 'Sample pro demos']].map(([k, label]) => (
+            <span key={k} className={'chip' + (source === k ? ' on' : '')} onClick={() => setSource(k)}>{label} · {counts[k]}</span>
+          ))}
+        </div>
       )}
 
       <div className="tabs">

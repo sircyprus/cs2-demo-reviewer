@@ -14,7 +14,7 @@ Only CS2 demos work (they start with `PBDEMS2`). CS:GO demos are rejected.
 
 ## Sample demos
 
-A few public pro matches (PGL Masters Bucharest 2026) are included so you can try the site straight away. They are tagged **sample**, show the real team names and credit their source. Untick "include sample pro demos" under the date filter to hide them from every tab.
+A few public pro matches (PGL Masters Bucharest 2026) are included so you can try the site straight away. They are tagged **sample**, show the real team names and credit their source. Use the **Show** chips under the date filter to switch between **All demos**, **My demos** (the ones you added) and **Sample pro demos**; the choice applies to every tab.
 
 ## Matches tab
 

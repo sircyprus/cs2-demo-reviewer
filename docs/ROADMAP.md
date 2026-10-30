@@ -31,6 +31,12 @@ Status as of 2026-10-31. Effort: **S** = an evening, **M** = a few evenings, **L
 | 6 | **Regression tests** (golden JSON for a small sample demo, run in CI) | The native and WASM parsers were compared by hand once; this should be automatic. | S–M |
 | 7 | **Smaller data**: pre-compress replay data, move to typed/binary arrays, load replay data per round | Replays are 3–7 MB each, which makes browser storage and load times heavier than they need to be. | M |
 
+## Feedback from a friend (2026-11-01)
+
+- **A sample for every active-duty map** (Ancient, Anubis and Inferno are still missing; see `docs/SAMPLES.md`).
+- ~~Filter built-in demos out~~: done, the **Show** chips (All / My demos / Sample pro demos).
+- **First-person view.** A real first-person camera needs each map's 3D geometry, which means Valve's map files (hundreds of MB, copyrighted) and a 3D renderer; not realistic for a static site. A useful 2D stand-in is a **POV mode**: lock the camera to one player and rotate the map so their view points up, draw their field of view as a wedge, show what is inside it (ignoring walls, since there is no geometry) and mirror their weapon, health and crosshair angle in a side panel. Needs pitch added to the replay data. (M)
+
 ## Requested features (added 2026-10-31)
 
 | Feature | What it needs | Effort |
