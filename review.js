@@ -1,4 +1,4 @@
-// CS2 demo reviewer CLI: scans ./demos (recursively) and writes JSON for the React site to ./site/public/data.
+// Masturbatorium (CS2 demo reviewer) CLI: scans ./demos (recursively) and writes JSON for the React site to ./site/public/data.
 // The analysis itself lives in site/src/parser/analyse.js and is shared with the in-browser (WASM) parser.
 const fs = require('fs');
 const path = require('path');

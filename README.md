@@ -1,4 +1,4 @@
-# CS2 Demo Reviewer
+# Masturbatorium
 
 Match reports and a 2D replay for Counter-Strike 2 demos. Demos are parsed in your browser and never uploaded.
 

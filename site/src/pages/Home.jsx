@@ -87,8 +87,8 @@ export default function Home() {
     <div className="page">
       <div className="top">
         <div>
-          <h1>CS2 Demo Reviewer</h1>
-          <div className="muted">Demos are read in your browser. Nothing is uploaded.</div>
+          <h1>Masturbatorium</h1>
+          <div className="muted">A CS2 demo reviewer. Demos are read in your browser; nothing is uploaded.</div>
         </div>
         <img className="hero-art" src={heroArt} alt="" />
         <div className="stats">

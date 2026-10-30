@@ -4,7 +4,7 @@ Guidance for Claude Code, Codex and similar tools working in this repo.
 
 ## What this is
 
-A static React site (Vite) that reviews Counter-Strike 2 demos: match reports and a 2D replay. Demos are parsed **in the visitor's browser** with a WebAssembly build of demoparser2. A Node CLI (`review.js`) does the same parsing locally for the site owner. Hosted on GitHub Pages. Read `docs/ARCHITECTURE.md` first, then `docs/ROADMAP.md` for what is planned.
+The project is called **Masturbatorium**. A static React site (Vite) that reviews Counter-Strike 2 demos: match reports and a 2D replay. Demos are parsed **in the visitor's browser** with a WebAssembly build of demoparser2. A Node CLI (`review.js`) does the same parsing locally for the site owner. Hosted on GitHub Pages. Read `docs/ARCHITECTURE.md` first, then `docs/ROADMAP.md` for what is planned.
 
 ## Non-negotiable rule: never publish anyone's demos
 
