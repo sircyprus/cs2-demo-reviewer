@@ -1,74 +1,80 @@
 # Style guide
 
-The look is a dark, violet-tinted UI built around one four-colour palette, with a few fixed "data" colours that carry meaning in the game. All values live as CSS variables in `site/src/styles.css` (`:root`); use the variables, never raw hex, in components.
+A Y2K look: glossy candy buttons, frosted glass, bubble highlights, chrome-style headings and a rounded type pairing. It is built directly on one four-colour palette and comes in two themes that share every rule.
 
-## Brand palette
+Mockups of both themes: `docs/mockups/bubblegum.html` and `night.html` (they use the real stylesheet, see `docs/mockups/README.md`).
+
+## Palette
 
 From Color Hunt: https://colorhunt.co/palette/8e1ea2c654c3ed96d7ffc0de
 
-| Token | Hex | Use |
+| Token | Hex | Role |
 | --- | --- | --- |
-| `--acc-deep` | `#8E1EA2` | Fills behind white text: primary buttons. Too dark for text on the dark background. |
-| `--acc-strong` | `#C654C3` | Borders of active/primary controls, focus rings, hover emphasis. |
-| `--acc` | `#ED96D7` | Links, active tab underline, highlighted text, the Team A colour. |
-| `--acc-soft` | `#FFC0DE` | Rare highlights: badges, hover text. Never as a large fill. |
+| `--p1` | `#8E1EA2` | Deep: primary-button base, headings, text accent on light surfaces |
+| `--p2` | `#C654C3` | Strong: borders, focus rings, hover, the stage frame |
+| `--p3` | `#ED96D7` | Soft: highlights, night-theme accent and links |
+| `--p4` | `#FFC0DE` | Pale: the page background of the light theme, glass tint, night-theme headings |
 
-## Surfaces and text (derived from the palette hue)
+Everything else is derived from these. All values are CSS variables in `site/src/styles.css`; use them, never raw hex, in components.
 
-| Token | Hex | Use |
+## Themes
+
+Set with `data-theme` on `<html>` (`lib/theme.js`, toggled by `ThemeToggle`, remembered in localStorage).
+
+| | **bubblegum** (default, light) | **night** (dark) |
 | --- | --- | --- |
-| `--bg` | `#130a17` | Page background |
-| `--stage` | `#0e0812` | Behind the replay canvas |
-| `--panel` | `#1c1122` | Cards, side panels, bars |
-| `--panel2` | `#27192f` | Inputs, buttons, inset rows |
-| `--line` | `#3d2a48` | Borders and dividers |
-| `--sel` | `#3b1745` | Selected chip / drag-over background |
-| `--fg` | `#f7eaf4` | Primary text |
-| `--mut` | `#a98fb5` | Secondary text, labels |
+| Page | Gradient `#ffd9ec → #FFC0DE → #f4a8e0 → #e48ad6` | Gradient `#12031a → #240a33 → #3b0f4d` |
+| Surfaces | White glass 58 % with a white border | Pink-tinted glass 7 % with a pink border |
+| Text / muted | `#3a0f46` / `#7d3f8b` | `#fdeaf7` / `#cba3d8` |
+| Links, accents | `--p1` | `--p3` / `--p4` |
+| Stage (behind the map) | `#26092f` | `#14041b` |
 
-## Data colours (do not re-theme)
+## Data colours
 
-These mean something in the game, so they stay fixed and are *not* part of the brand palette.
+These carry meaning in the game and are tuned per theme for contrast; they are *not* brand colours.
 
-| Meaning | Token / hex |
-| --- | --- |
-| Terrorist side | `--T` `#e8a94b` (orange) |
-| Counter-Terrorist side | `--CT` `#5da9ff` (blue) |
-| Team A / Team B | `--A` `#ED96D7` (pink) / `--B` `#6fd3c9` (teal) |
-| Good / health high | `#4fd37a` |
-| Warning / health medium | `#e8c14b` |
-| Bad / health low / bomb | `#e5534b`, `#ff4d3d` |
+| Meaning | bubblegum | night |
+| --- | --- | --- |
+| Terrorist (`--T`) | `#b45f06` | `#f0b25b` |
+| Counter-Terrorist (`--CT`) | `#1d5fd0` | `#6fb3ff` |
+| Team A (`--A`) | `#a3157f` | `#ED96D7` |
+| Team B (`--B`) | `#0b7f78` | `#6fd9cf` |
+| Good / Bad / Warning | `#1e8e4e` / `#c0352d` / `#a87400` | `#4fd37a` / `#ff6b5f` / `#f0c24b` |
 
-Rule: side colours (T/CT) are used for in-game things (players, rounds, kill feed); team colours (A/B) for the scoreboard and head-to-head. Never use T/CT colours for generic UI.
+Side colours (T/CT) are for in-game things only (players, rounds, kill feed). Team colours (A/B) are for scoreboards and head-to-head. The canvas draws players with brighter fixed T/CT colours because it always sits on the dark stage.
 
-## Typography and spacing
+## Type
 
-- System font stack (`system-ui, Segoe UI, sans-serif`); base 14 px, line-height 1.45. Numbers that change use `font-variant-numeric: tabular-nums`.
-- Headings: h1 24 px, h2 16 px semibold. Small labels 11–12 px in `--mut`.
-- Spacing in multiples of 4 px (gaps mostly 6, 8, 12, 16). Pages are max 1280 px wide with 32 px side padding (16 px on phones).
-- Radius: 6 px controls, 8–10 px cards, 99 px chips.
+- **Orbitron** (700, 900) for the logo, headings, big numbers, the round clock: the Y2K voice. Uppercase with wide tracking for h1/h2.
+- **Quicksand** (500, 700) for everything else: rounded, friendly, readable at 11–14 px.
+- Both are self-hosted through `@fontsource`, so the site makes no third-party requests. Orbitron's zero is slashed; for scores that must read as plain numbers (the replay HUD) use Quicksand.
+
+## Shape and effects
+
+- Pills for anything clickable (radius 99 px); 16–22 px radius on cards, 12 px on inner tiles.
+- **Glass**: translucent fill, 2 px light border, soft purple shadow, `backdrop-filter: blur(10px)`, 1 px inner top highlight.
+- **Candy buttons**: vertical gradient with a hard edge at 50 % (`--btn-top/mid/low/bot`), 1 px border, glow, white text-shadow. Primary/active buttons use the `--pri-*` set (deep purple with a pink highlight) and white text.
+- **Monitors**: the replay map and the timeline sit in dark "screens" with a 3 px white bezel plus a `--p2` ring, so map colours stay readable on either theme.
+- **Sparkle**: the heading star (✦) and a few tiny white bubbles and glows in the page background. Keep decoration in the background layer; never put it behind text.
 
 ## Components
 
-- **Primary action** (`.btn.pri`): `--acc-deep` fill, `--acc-strong` border, white text. One per card.
-- **Secondary** (`.btn`): `--panel2` fill, `--line` border; border turns `--acc` on hover.
-- **Chip** (`.chip`): outline pill; `.on` uses `--sel` fill and `--acc-strong` border.
-- **Card**: `--panel` fill, 1 px `--line` border. A dashed border means a drop target.
-- **Tabs**: text in `--mut`; the active tab is `--fg` with a `--acc` underline.
-- **Replay HUD**: panels on `--panel`, canvas on `--stage`; overlays use `rgba(19,10,23,.85)` so the map stays visible.
+- `.btn` secondary: glossy light button. `.btn.pri`: glossy purple. One primary per card.
+- `.chip` outline pill; `.on` = primary gloss. `.tabs` is a pill track with a primary-gloss active tab.
+- `.card`, `.stat`, `.m` (match), `.cmp`, `.vs`, `table`, `details`: all glass.
+- Replay: floating glass HUD pill, glass player cards with a side-coloured left edge, health bars with a glossy fill, kill feed and tools as dark glass pills over the map.
 
 ## Replay canvas conventions
 
-- Players: side-coloured dot, dark 2 px halo, health ring (green > 50, amber > 25, red below), view cone at 20 % opacity, name in white with a black shadow.
-- Focus mode: everyone but the selected player drops to 35 % opacity at 70 % size, with no cone or name; the focused player is 15 % larger with a longer trail and a white ring.
-- Utility: smoke grey, fire orange, flash white ring, HE red ring; grenade badges are dark discs with a coloured rim.
-- Heatmap ramps: paths use the brand palette (`#8E1EA2` → `#C654C3` → `#ED96D7` → `#FFC0DE`), deaths use red to amber to cream (`#8b1e1e` → `#e5534b` → `#ffd23f` → `#fff6c8`), kills use teal. Transparent below 4 % intensity so the radar stays readable.
-- Annotation colours: `#ff4d3d`, `#ffd23f`, `#4fd37a`, `#ffffff`, `#4cc9f0` (chosen to read on every radar).
+- Players: side-coloured dot, dark halo, health ring (green > 50, amber > 25, red below), view cone, white name with a black shadow.
+- Focus mode: others fade to 35 % at 70 % size without cone or name; the focused player is 15 % larger with a longer trail and a white ring.
+- Heatmap ramps: paths use the palette (`#8E1EA2 → #C654C3 → #ED96D7 → #FFC0DE`), deaths red → amber → cream, kills teal; transparent under 4 % intensity.
+- Utility: smoke grey, fire orange, flash white ring, HE red ring. Annotation colours: `#ff4d3d`, `#ffd23f`, `#4fd37a`, `#ffffff`, `#4cc9f0`.
 
 ## Accessibility
 
-- Body text on `--bg`/`--panel` is at least 7:1; `--acc` text is about 8:1; `--acc-strong` text is around 4.5:1, so use it for borders and icons, not for small text.
-- Never rely on colour alone: round outcomes also use icons (💣 ✂ ☠ ⏱), deaths use an X marker, selected cards get an outline.
-- Everything in the replay has a keyboard shortcut (see the user guide).
+- Text on glass is at least 4.5:1 in both themes (checked by eye on the mockups; re-check when changing a token). `--p3`-coloured text is only used in the night theme; on the light theme use `--p1`.
+- Colour is never the only signal: round outcomes also use icons, deaths use an X, selected cards get an outline.
+- `prefers-reduced-motion`: there is no autoplaying decoration; the only transition is a 2 px lift on hover.
 
-When adding UI: reuse a token above; if you need a new colour, add it here first.
+When adding UI: use a token; if you need a new colour, add it here and in both themes first.

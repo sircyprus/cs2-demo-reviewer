@@ -12,6 +12,10 @@ Live site: https://sircyprus.github.io/cs2-demo-reviewer/
 
 Only CS2 demos work (they start with `PBDEMS2`). CS:GO demos are rejected.
 
+## Look
+
+The site has two themes: **bubblegum** (light, the default) and **night** (dark). Use the button in the top-right corner of the home page or the replay header to switch; the choice is remembered in your browser.
+
 ## Matches tab
 
 One card per demo: radar thumbnail, map, score (Team A : Team B), date, round count, the top three players by rating, and **Report** / **▶ Replay** buttons.

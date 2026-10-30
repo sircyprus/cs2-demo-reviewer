@@ -74,6 +74,11 @@ export class ReplayEngine {
     // heatmap overlay: layer off|deaths|kills|paths, side -1|0|1, player -1|index, rounds all|current|range
     this.heat = { layer: 'off', side: -1, player: -1, rounds: { mode: 'all', from: 1, to: D.rounds.length } };
     this.heatDirty = false; this.heatCanvas = null; this.heatN = 0; this.heatCur = -1;
+    // canvas background follows the theme's --stage colour
+    this.readTheme = () => { this.stage = getComputedStyle(document.documentElement).getPropertyValue('--stage').trim() || '#26092f'; };
+    this.readTheme();
+    this.themeObs = new MutationObserver(this.readTheme);
+    this.themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     this.drawOn = false; this.tool = 'pen'; this.color = COLORS[0]; this.cur = null; this.ann = {};
     this.drag = null; this.tlDrag = false;
     this.nameIdx = {}; D.names.forEach((n, i) => { this.nameIdx[n] = i; });
@@ -281,7 +286,7 @@ export class ReplayEngine {
   draw() {
     const { ctx, D, W, H, S, view, dpr } = this;
     const t = this.tickOf(this.pos), R = D.rounds[this.roundIdx(t)];
-    ctx.fillStyle = '#0e0812'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = this.stage; ctx.fillRect(0, 0, W, H);
     const tl0 = this.toScr(0, 0), br = this.toScr(1, 1);
     const want = this.imgs[this.level], img = want && want.complete && want.naturalWidth ? want : (this.imgs.upper && this.imgs.upper.complete ? this.imgs.upper : null);
     if (img) { ctx.globalAlpha = 0.9; ctx.drawImage(img, tl0[0], tl0[1], br[0] - tl0[0], br[1] - tl0[1]); ctx.globalAlpha = 1; }
@@ -518,7 +523,7 @@ export class ReplayEngine {
   }
 
   destroy() {
-    cancelAnimationFrame(this.raf);
+    cancelAnimationFrame(this.raf); this.themeObs.disconnect();
     this.cv.removeEventListener('wheel', this.h.wheel);
     this.cv.removeEventListener('mousedown', this.h.down);
     this.tl.removeEventListener('mousedown', this.h.tlDown);

@@ -13,6 +13,7 @@ Status as of 2026-10-31. Effort: **S** = an evening, **M** = a few evenings, **L
 - [x] React static site, hosted on GitHub Pages
 - [x] In-browser parsing through a CS2-capable WASM parser; results kept on the visitor's device
 - [x] Death, kill and movement heatmaps in the replay (filter by side, player, rounds)
+- [x] Y2K redesign on the Color Hunt palette, with light and dark themes and mockups (`docs/mockups/`)
 - [x] Focus mode in the replay (click a player or press F; everyone else fades)
 - [x] Style guide and palette (`docs/STYLE-GUIDE.md`) and agent notes (`AGENTS.md`)
 - [x] No demo data is published: the public site is the app only, and demos stay in each visitor's browser

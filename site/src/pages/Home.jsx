@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import AddDemos from '../components/AddDemos.jsx';
+import ThemeToggle from '../components/ThemeToggle.jsx';
 import { deleteDemo, listLocal } from '../lib/store.js';
 import { useSearchParams } from 'react-router-dom';
 import { asset, useJson } from '../lib/data.js';
@@ -86,6 +87,7 @@ export default function Home() {
           <div className="muted">Demos are read in your browser. Nothing is uploaded.</div>
         </div>
         <div className="stats">
+          <ThemeToggle />
           {stats.map(([label, v]) => <div className="stat" key={label}><b>{v}</b><span>{label}</span></div>)}
         </div>
       </div>

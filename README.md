@@ -8,7 +8,7 @@ Live: https://sircyprus.github.io/cs2-demo-reviewer/
 
 - [User guide](docs/USER-GUIDE.md) - what every screen and control does, and what the numbers mean
 - [Architecture](docs/ARCHITECTURE.md) - parsers, data files, WASM build, publishing
-- [Style guide](docs/STYLE-GUIDE.md) - palette, tokens and UI conventions (agents: see [AGENTS.md](AGENTS.md))
+- [Style guide](docs/STYLE-GUIDE.md) - Y2K palette, themes and UI conventions ([mockups](docs/mockups/README.md)) (agents: see [AGENTS.md](AGENTS.md))
 - [Roadmap](docs/ROADMAP.md) - what's shipped, what's next, known limitations
 
 ## Using it locally
