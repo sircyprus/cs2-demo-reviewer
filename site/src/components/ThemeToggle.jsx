@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { getTheme, setTheme } from '../lib/theme.js';
+import { THEME_LABEL, getTheme, nextTheme, setTheme } from '../lib/theme.js';
 
 export default function ThemeToggle() {
   const [theme, set] = useState(getTheme());
-  const next = theme === 'night' ? 'bubblegum' : 'night';
+  const next = nextTheme(theme);
   return (
-    <button className="btn theme-btn" title="Switch between the light and dark look" onClick={() => { setTheme(next); set(next); }}>
-      {theme === 'night' ? '✦ Bubblegum' : '☾ Night'}
+    <button className="btn theme-btn" title={'Switch look (now: ' + theme + ')'} onClick={() => { setTheme(next); set(next); }}>
+      {THEME_LABEL[next]}
     </button>
   );
 }

@@ -33,7 +33,7 @@ cd site && npm run build        # static build in site/dist (Pages workflow does
 ## Conventions
 
 - Plain JavaScript (ESM) and React function components; no TypeScript yet. Follow the surrounding style (2-space indent, single quotes, semicolons).
-- **Styling follows `docs/STYLE-GUIDE.md`** (Y2K look, Color Hunt palette, two themes: bubblegum and night). Use the CSS variables, never raw hex; every new rule must work in both themes. Side colours (T / CT) are reserved for in-game meaning. Mockups live in `docs/mockups/`.
+- **Styling follows `docs/STYLE-GUIDE.md`** (Y2K look, Color Hunt palette, three themes: bubblegum, holo and night). Use the CSS variables, never raw hex; every new rule must work in both themes. Side colours (T / CT) are reserved for in-game meaning. Mockups live in `docs/mockups/`.
 - Routing is hash-based and `base` is `./`: keep URLs relative (use `asset()` from `lib/data.js`) so the site works from a sub-path.
 - Player ids in data are hashed (`anon()`); never write raw SteamIDs into any output.
 

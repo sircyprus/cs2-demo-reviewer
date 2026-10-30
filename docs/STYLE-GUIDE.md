@@ -19,6 +19,8 @@ Everything else is derived from these. All values are CSS variables in `site/src
 
 ## Themes
 
+Three themes: **bubblegum** (light, default), **holo** (iridescent device look, inspired by the Y2K "Glow Up" Dribbble shot: https://dribbble.com/shots/27686678-Glow-Up-Y2K-Landing-Page-for-a-Wellness-App) and **night** (dark neon).
+
 Set with `data-theme` on `<html>` (`lib/theme.js`, toggled by `ThemeToggle`, remembered in localStorage).
 
 | | **bubblegum** (default, light) | **night** (dark) |
@@ -28,6 +30,15 @@ Set with `data-theme` on `<html>` (`lib/theme.js`, toggled by `ThemeToggle`, rem
 | Text / muted | `#3a0f46` / `#7d3f8b` | `#fdeaf7` / `#cba3d8` |
 | Links, accents | `--p1` | `--p3` / `--p4` |
 | Stage (behind the map) | `#26092f` | `#14041b` |
+
+### Holo specifics
+
+- **Backdrop**: aurora of magenta, violet, sky blue and coral (`--page`) with soft white clouds; the whole app sits in a frosted rounded "device window" (the `.page` element) with chrome four-point stars on its corners.
+- **LCD readouts**: stat tiles, the score pills and the round clock use VT323 on a pale green-grey LCD (`--lcd`, `--lcd-ink`) with a white bezel, like a handheld pet.
+- **Egg screens**: match cards show the radar in an egg-shaped screen with stacked pink / lilac / sky rings.
+- **Holographic bezels**: the replay map and the timeline use a conic gradient border (`--holo`: pink, lilac, sky, mint, peach).
+- **Buttons**: pink gel for active tabs, chips and toggles; **lime** (`#d8f66e` family) is reserved for the single main action on a card (`.btn.pri`). Lime is the one colour outside the palette family; it is borrowed from the reference and is not used anywhere else.
+- **Type**: Unbounded (700, 900) lowercase headings, Quicksand body, VT323 for numbers.
 
 ## Data colours
 
