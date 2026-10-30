@@ -19,7 +19,7 @@ Everything else is derived from these. All values are CSS variables in `site/src
 
 ## Themes
 
-Three themes: **bubblegum** (light, default), **holo** (iridescent device look, inspired by the Y2K "Glow Up" Dribbble shot: https://dribbble.com/shots/27686678-Glow-Up-Y2K-Landing-Page-for-a-Wellness-App) and **night** (dark neon).
+Three themes: **holo** (default), **bubblegum** (light) and **night** (dark neon). Holo is the iridescent device look, inspired by the Y2K "Glow Up" Dribbble shot: https://dribbble.com/shots/27686678-Glow-Up-Y2K-Landing-Page-for-a-Wellness-App.
 
 Set with `data-theme` on `<html>` (`lib/theme.js`, toggled by `ThemeToggle`, remembered in localStorage).
 
@@ -33,9 +33,11 @@ Set with `data-theme` on `<html>` (`lib/theme.js`, toggled by `ThemeToggle`, rem
 
 ### Holo specifics
 
-- **Backdrop**: aurora of magenta, violet, sky blue and coral (`--page`) with soft white clouds; the whole app sits in a frosted rounded "device window" (the `.page` element) with chrome four-point stars on its corners.
+- **Backdrop**: aurora of magenta, violet, sky blue and coral (`--page`) that drifts slowly, with soft white clouds, twinkling white sparkles and a faint film grain; the whole app sits in a frosted rounded "device window" (the `.page` element) with chrome four-point stars on its corners.
 - **LCD readouts**: stat tiles, the score pills and the round clock use VT323 on a pale green-grey LCD (`--lcd`, `--lcd-ink`) with a white bezel, like a handheld pet.
-- **Egg screens**: match cards show the radar in an egg-shaped screen with stacked pink / lilac / sky rings.
+- **Egg screens**: match cards show the radar in an egg-shaped screen with stacked pink / lilac / sky rings and three pink pearl buttons underneath.
+- **Window halo**: the pastel ring (`--ring`) around the window, the replay HUD and the bottom bar.
+- **Motion**: headings shimmer, buttons get a light sweep on hover, cards lift. All of it stops under `prefers-reduced-motion`.
 - **Holographic bezels**: the replay map and the timeline use a conic gradient border (`--holo`: pink, lilac, sky, mint, peach).
 - **Buttons**: pink gel for active tabs, chips and toggles; **lime** (`#d8f66e` family) is reserved for the single main action on a card (`.btn.pri`). Lime is the one colour outside the palette family; it is borrowed from the reference and is not used anywhere else.
 - **Type**: Unbounded (700, 900) lowercase headings, Quicksand body, VT323 for numbers.

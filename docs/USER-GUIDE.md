@@ -14,7 +14,7 @@ Only CS2 demos work (they start with `PBDEMS2`). CS:GO demos are rejected.
 
 ## Look
 
-The site has three looks: **bubblegum** (light, the default), **holo** (iridescent, with LCD readouts) and **night** (dark). The button in the top-right corner of the home page and the replay header cycles through them; the choice is remembered in your browser.
+The site has three looks: **holo** (the default: iridescent, with LCD readouts), **bubblegum** (light) and **night** (dark). The button in the top-right corner of the home page and the replay header cycles through them; the choice is remembered in your browser.
 
 ## Matches tab
 
