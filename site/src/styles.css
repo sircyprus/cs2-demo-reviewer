@@ -82,6 +82,7 @@ input[type=checkbox]{min-width:0;accent-color:var(--p2)}
 .m .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .m .mp{font-weight:700;font-size:16px;color:var(--acc);letter-spacing:.02em}
 .m .sc{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+.m .teams{font-weight:700;font-size:13px}
 .m .fn{color:var(--mut);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .m .tp{display:flex;flex-direction:column;gap:2px;font-size:12px}
 .m .tp div{display:flex;justify-content:space-between;gap:8px}

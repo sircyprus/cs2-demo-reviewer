@@ -11,6 +11,8 @@ const DEMO_DIR = path.join(ROOT, 'demos');
 const SITE = path.join(ROOT, 'site');
 const OUT_DIR = path.join(SITE, 'public', 'data');
 const MAPS_DIR = path.join(SITE, 'public', 'maps');
+const SAMPLE_DIR = path.join(ROOT, 'sample-demos');          // raw pro demos: git-ignored, never published
+const SAMPLE_OUT = path.join(SITE, 'public', 'samples');   // parsed samples: published on purpose
 const FORCE = process.argv.includes('--force');
 
 const slug = s => s.replace(/[^a-z0-9]+/gi, '_').replace(/^_|_$/g, '');
@@ -18,14 +20,14 @@ const COMPRESSED = /\.(bz2|gz|zst|zip)$/i;
 
 // Finds .dem files plus compressed ones (.dem.bz2 / .gz / .zst, or .zip containing .dem files).
 // Each item: { rel: display name, src: file on disk, kind, entry? (zip entry name), mtime }
-function findDemos(dir) {
+function findDemos(dir, base = DEMO_DIR) {
   const out = [];
   if (!fs.existsSync(dir)) return out;
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
-    if (e.isDirectory()) { out.push(...findDemos(p)); continue; }
+    if (e.isDirectory()) { out.push(...findDemos(p, base)); continue; }
     const lower = e.name.toLowerCase();
-    const rel = path.relative(DEMO_DIR, p);
+    const rel = path.relative(base, p);
     const mtime = fs.statSync(p).mtimeMs;
     if (lower.endsWith('.dem')) out.push({ rel, src: p, kind: 'raw', mtime });
     else if (lower.endsWith('.zip')) {
@@ -84,17 +86,16 @@ function writeMapsIndex() {
   fs.writeFileSync(path.join(MAPS_DIR, 'maps.json'), JSON.stringify(out));
 }
 
-async function main() {
-  const A = await import(pathToFileURL(path.join(SITE, 'src', 'parser', 'analyse.js')).href);
-  fs.mkdirSync(DEMO_DIR, { recursive: true });
-  fs.mkdirSync(OUT_DIR, { recursive: true });
-  const demos = findDemos(DEMO_DIR);
-  if (!demos.length) console.log('No demos found in ' + DEMO_DIR);
+// Parses every demo in srcDir into outDir. meta(rel) may return extra fields (sample metadata) to merge into the analysis.
+function processFolder(A, srcDir, outDir, meta = () => ({}), prefix = '') {
+  fs.mkdirSync(srcDir, { recursive: true });
+  fs.mkdirSync(outDir, { recursive: true });
+  const demos = findDemos(srcDir, srcDir);
+  if (!demos.length) console.log('No demos found in ' + srcDir);
   const items = [], failed = [];
-
   for (const item of demos) {
-    const rel = item.rel, id = slug(rel);
-    const jsonPath = path.join(OUT_DIR, id + '.json'), replayJson = path.join(OUT_DIR, id + '.replay.json');
+    const rel = item.rel, id = prefix + slug(rel);
+    const jsonPath = path.join(outDir, id + '.json'), replayJson = path.join(outDir, id + '.replay.json');
     try {
       let a;
       if (!FORCE && fs.existsSync(jsonPath) && fs.existsSync(replayJson) && fs.statSync(jsonPath).mtimeMs > item.mtime) {
@@ -110,7 +111,7 @@ async function main() {
           fs.writeFileSync(replayJson, JSON.stringify(A.buildReplay(api, a, ev)));
         } finally { m.cleanup(); }
       }
-      Object.assign(a, A.demoDate(rel, item.mtime), { slug: id });
+      Object.assign(a, A.demoDate(rel, item.mtime), { slug: id }, meta(rel));
       fs.writeFileSync(jsonPath, JSON.stringify(a));
       items.push(a);
     } catch (e) {
@@ -118,10 +119,39 @@ async function main() {
       failed.push({ file: rel, err: e.message });
     }
   }
+  return { items, failed };
+}
 
-  fs.writeFileSync(path.join(OUT_DIR, 'index.json'), JSON.stringify({ demos: items.map(A.summarise), failed }));
+// samples.json (committed) describes each public sample demo: { "<file name without .dem>": { title, event, date, source, credit } }
+function sampleMeta() {
+  let manifest = {};
+  try { manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'samples.json'), 'utf8')); } catch { /* no manifest yet */ }
+  return rel => {
+    const key = path.basename(rel).replace(/\.dem$/i, '');
+    const m = manifest[key] || {};
+    const out = { sample: true };
+    for (const k of ['title', 'event', 'source', 'credit']) if (m[k]) out[k] = m[k];
+    if (m.date) { const d = Date.parse(m.date + 'T12:00:00Z'); if (!Number.isNaN(d)) { out.date = d; out.dateSource = 'manifest'; } }
+    return out;
+  };
+}
+
+async function main() {
+  const A = await import(pathToFileURL(path.join(SITE, 'src', 'parser', 'analyse.js')).href);
+
+  // private demos (local use only)
+  const mine = processFolder(A, DEMO_DIR, OUT_DIR);
+  fs.writeFileSync(path.join(OUT_DIR, 'index.json'), JSON.stringify({ demos: mine.items.map(A.summarise), failed: mine.failed }));
+  console.log(`Demos: ${mine.items.length} ok, ${mine.failed.length} failed -> ${OUT_DIR}`);
+
+  // public sample demos (pro matches): only parsed stats and replay data are written, never the raw files
+  if (fs.existsSync(SAMPLE_DIR)) {
+    const samples = processFolder(A, SAMPLE_DIR, SAMPLE_OUT, sampleMeta(), 'sample_');
+    fs.writeFileSync(path.join(SAMPLE_OUT, 'index.json'), JSON.stringify({ demos: samples.items.map(A.summarise), failed: [] }));
+    console.log(`Samples: ${samples.items.length} ok, ${samples.failed.length} failed -> ${SAMPLE_OUT}`);
+  }
+
   writeMapsIndex();
-  console.log(`Done: ${items.length} ok, ${failed.length} failed -> ${OUT_DIR}`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

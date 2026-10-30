@@ -8,9 +8,10 @@ A static React site (Vite) that reviews Counter-Strike 2 demos: match reports an
 
 ## Non-negotiable rule: never publish anyone's demos
 
-- `demos/`, `site/public/data/` and `legacy/` are git-ignored. **Never** commit or deploy raw demos or parsed demo data, and never add a step that uploads them anywhere.
-- The deployed site must contain only the app. Visitors' demos stay in their own browser (IndexedDB). Do not add features that send demo data to a server.
-- Git history was rewritten once to remove earlier data; do not reintroduce it.
+- `demos/`, `sample-demos/`, `site/public/data/` and `legacy/` are git-ignored. **Never** commit or deploy raw demo files, and never add a step that uploads a visitor's or the owner's private demos anywhere.
+- The deployed site must not contain private demo data. Visitors' demos stay in their own browser (IndexedDB). Do not add features that send demo data to a server.
+- **One approved exception: sample demos.** The owner chose to publish the *parsed* stats and replay data (never the raw files) of a few public pro tournament matches as test data for visitors. They live in `sample-demos/` (raw, ignored) -> `site/public/samples/` (parsed, committed), are described in `samples.json`, and every card and report credits the source. Anything else needs the owner's explicit say-so first. See `docs/SAMPLES.md`.
+- Git history was rewritten once to remove earlier private data; do not reintroduce it.
 
 ## Commands
 

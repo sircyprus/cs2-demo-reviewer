@@ -191,7 +191,7 @@ export class ReplayEngine {
       playing: this.playing, speed: this.speed, drawOn: this.drawOn, tool: this.tool, color: this.color,
       trail: this.trail, names: this.names, level: this.level, focus: this.focus, selected: this.selected, heat: this.heat, heatN: this.heatN, nRounds: D.rounds.length, hasLower: !!(this.radar && this.radar.hasLower),
       clock: { big, small, bomb, round: R.n, total: D.rounds.length },
-      scoreT: tIsA ? sA : sB, scoreCT: tIsA ? sB : sA, teamT: tIsA ? 'Team A' : 'Team B', teamCT: tIsA ? 'Team B' : 'Team A',
+      scoreT: tIsA ? sA : sB, scoreCT: tIsA ? sB : sA, teamT: tIsA ? (D.teamNames?.A || 'Team A') : (D.teamNames?.B || 'Team B'), teamCT: tIsA ? (D.teamNames?.B || 'Team B') : (D.teamNames?.A || 'Team A'),
       cards, hdr: [hdr(0), hdr(1)], feed, rinfo,
     };
   }

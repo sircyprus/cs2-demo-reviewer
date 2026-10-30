@@ -12,6 +12,10 @@ Live site: https://sircyprus.github.io/cs2-demo-reviewer/
 
 Only CS2 demos work (they start with `PBDEMS2`). CS:GO demos are rejected.
 
+## Sample demos
+
+A few public pro matches (PGL Masters Bucharest 2026) are included so you can try the site straight away. They are tagged **sample**, show the real team names and credit their source. Untick "include sample pro demos" under the date filter to hide them from every tab.
+
 ## Matches tab
 
 One card per demo: radar thumbnail, map, score (Team A : Team B), date, round count, the top three players by rating, and **Report** / **▶ Replay** buttons.

@@ -41,6 +41,8 @@ function DateBar({ range, setRange, demos, shown }) {
 
 export default function Home() {
   const { data, error } = useJson(asset('data/index.json'));
+  const samples = useJson(asset('samples/index.json'));
+  const [showSamples, setShowSamples] = useState(true);
   const [sp, setSp] = useSearchParams();
   const tab = sp.get('tab') || 'm';
   const setTab = t => setSp(t === 'm' ? {} : { tab: t }, { replace: true });
@@ -56,12 +58,13 @@ export default function Home() {
   const removeLocal = async slug => { await deleteDemo(slug); refreshLocal(); };
 
   const all = useMemo(() => {
-    const built = data?.demos || [], seen = new Set(built.map(d => d.slug));
+    const built = [...(data?.demos || []), ...(samples.data?.demos || [])], seen = new Set(built.map(d => d.slug));
     return [...built, ...local.filter(d => !seen.has(d.slug))];
-  }, [data, local]);
+  }, [data, samples.data, local]);
+  const hasSamples = all.some(d => d.sample);
   const visible = useMemo(
-    () => all.filter(d => (!range.from && !range.to) || (d.date && (!range.from || d.date >= range.from) && (!range.to || d.date < range.to + DAY))),
-    [all, range]
+    () => all.filter(d => (showSamples || !d.sample) && ((!range.from && !range.to) || (d.date && (!range.from || d.date >= range.from) && (!range.to || d.date < range.to + DAY)))),
+    [all, range, showSamples]
   );
   const stats = useMemo(() => {
     const pl = new Set(); let rounds = 0;
@@ -70,7 +73,7 @@ export default function Home() {
   }, [visible]);
 
   // No pre-built demos is the normal state of the public site: everything is added (and stays) in the visitor's browser.
-  if (!data && !error) return <div className="page muted">Loading…</div>;
+  if ((!data && !error) || (!samples.data && !samples.error)) return <div className="page muted">Loading…</div>;
 
   const compare = id => {
     if (!h2h.a || h2h.b || id === h2h.a) { setH2h({ a: id, b: '' }); return; }
@@ -93,6 +96,11 @@ export default function Home() {
       <AddDemos onAdded={refreshLocal} />
 
       <DateBar range={range} setRange={setRange} demos={all} shown={visible.length} />
+      {hasSamples && (
+        <label className="bar muted" style={{ marginTop: -6 }}>
+          <input type="checkbox" checked={showSamples} onChange={e => setShowSamples(e.target.checked)} /> include sample pro demos (public tournament matches, credited on each card)
+        </label>
+      )}
 
       <div className="tabs">
         {TABS.map(([k, label]) => <button key={k} className={'tab' + (tab === k ? ' on' : '')} onClick={() => setTab(k)}>{label}</button>)}

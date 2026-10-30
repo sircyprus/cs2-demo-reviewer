@@ -44,7 +44,7 @@ export function useDemoData(slug, kind) {
     if (isLocal(slug)) {
       getDemo(slug).then(rec => (rec ? done(rec[kind]) : fail("This demo isn't saved in this browser.")), fail);
     } else {
-      fetchJson(asset(`data/${slug}${kind === 'replay' ? '.replay' : ''}.json`)).then(done, fail);
+      fetchJson(asset(`${slug.startsWith('sample_') ? 'samples' : 'data'}/${slug}${kind === 'replay' ? '.replay' : ''}.json`)).then(done, fail);
     }
     return () => { live = false; };
   }, [slug, kind]);

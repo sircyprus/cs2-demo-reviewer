@@ -9,6 +9,7 @@ Live: https://sircyprus.github.io/cs2-demo-reviewer/
 - [User guide](docs/USER-GUIDE.md) - what every screen and control does, and what the numbers mean
 - [Architecture](docs/ARCHITECTURE.md) - parsers, data files, WASM build, publishing
 - [Style guide](docs/STYLE-GUIDE.md) - bubblegum Y2K palette and UI conventions ([mockup](docs/mockups/README.md)) (agents: see [AGENTS.md](AGENTS.md))
+- [Sample demos](docs/SAMPLES.md) - the public pro matches shown as test data, and how to change them
 - [Roadmap](docs/ROADMAP.md) - what's shipped, what's next, known limitations
 
 ## Using it locally

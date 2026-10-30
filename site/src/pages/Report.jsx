@@ -40,8 +40,9 @@ export default function Report() {
         <Link to="/">← all demos</Link> · <Link to={`/demo/${slug}/replay`}><b>▶ 2D replay</b></Link>
       </p>
       <h1>{mapName(a.map)} <span className="muted" style={{ fontSize: 14 }}>{a.file} · {fmtDate(a.date)}</span></h1>
+      {a.sample && <p className="muted"><b>Sample:</b> {a.event} · {a.title} · {a.credit}</p>}
       <h2>
-        <span className="A">Team A {a.score.A}</span> : <span className="B">{a.score.B} Team B</span>{' '}
+        <span className="A">{a.teamNames?.A || 'Team A'} {a.score.A}</span> : <span className="B">{a.score.B} {a.teamNames?.B || 'Team B'}</span>{' '}
         <span className="muted">({a.nRounds} rounds)</span>
       </h2>
 
@@ -51,8 +52,8 @@ export default function Report() {
         ))}
       </div>
 
-      <h2 className="A">Team A ({a.score.A})</h2><Scoreboard players={team('A')} />
-      <h2 className="B">Team B ({a.score.B})</h2><Scoreboard players={team('B')} />
+      <h2 className="A">{a.teamNames?.A || 'Team A'} ({a.score.A})</h2><Scoreboard players={team('A')} />
+      <h2 className="B">{a.teamNames?.B || 'Team B'} ({a.score.B})</h2><Scoreboard players={team('B')} />
       {unassigned.length > 0 && <><h2>Unassigned</h2><Scoreboard players={unassigned} /></>}
       <p className="muted">*Rating is a rough HLTV 2.0 estimate. KAST ignores trades. ADR counts enemy damage only.</p>
 

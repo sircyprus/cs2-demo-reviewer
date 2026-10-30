@@ -12,6 +12,7 @@ Status as of 2026-10-31. Effort: **S** = an evening, **M** = a few evenings, **L
 - [x] Matches / Players / Head to Head, date filter
 - [x] React static site, hosted on GitHub Pages
 - [x] In-browser parsing through a CS2-capable WASM parser; results kept on the visitor's device
+- [x] Sample pro demos (nine PGL Masters Bucharest maps) with real team names, shown as credited test data
 - [x] Death, kill and movement heatmaps in the replay (filter by side, player, rounds)
 - [x] Bubblegum Y2K design on the Color Hunt palette, with a mockup (`docs/mockups/`)
 - [x] Focus mode in the replay (click a player or press F; everyone else fades)

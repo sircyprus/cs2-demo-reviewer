@@ -183,7 +183,9 @@ export function buildReplay(api, a, ev) {
   const wanted = [...wantedSet].sort((x, y) => x - y);
   const BASE = ['X', 'Y', 'Z', 'health', 'yaw', 'team_num', 'armor_value', 'active_weapon_name', 'balance', 'current_equip_value'];
   let rows;
-  try { rows = api.ticks(BASE, wanted); } catch { rows = api.ticks(BASE.slice(0, 6), wanted); }
+  // team_clan_name gives real team names in tournament demos; older/other parsers may not know it, so fall back step by step
+  try { rows = api.ticks([...BASE, 'team_clan_name'], wanted); }
+  catch { try { rows = api.ticks(BASE, wanted); } catch { rows = api.ticks(BASE.slice(0, 6), wanted); } }
   rows = rows || [];
 
   const ids = [], names = [], idx = new Map(), weapons = [], wIdx = new Map();
@@ -240,8 +242,19 @@ export function buildReplay(api, a, ev) {
     }
   }
 
+  // Real team names, when the demo carries them: the clan name most common among each team's players at the end of round 1's freeze time.
+  const teamOfId = new Map(a.players.map(p => [p.id, p.team]));
+  const tally = { A: {}, B: {} };
+  for (const r of byTick.get(freezeTicks[0]) || []) {
+    const t = teamOfId.get(anon(String(r.steamid))), n = r.team_clan_name;
+    if (t && n) tally[t][n] = (tally[t][n] || 0) + 1;
+  }
+  const top = o => Object.entries(o).sort((x, y) => y[1] - x[1])[0]?.[0] || null;
+  const teamNames = { A: top(tally.A), B: top(tally.B) };
+  if (teamNames.A || teamNames.B) a.teamNames = teamNames;
+
   return {
-    map: a.map, step: STEP, ids: ids.map(anon), names, weapons, frames, util, bomb, kills,
+    map: a.map, step: STEP, teamNames: a.teamNames || null, ids: ids.map(anon), names, weapons, frames, util, bomb, kills,
     rounds: a.rounds.map((r, i) => ({
       n: r.n, start: a.roundStarts[i], end: a.endTicks[i], winner: r.winner, reason: r.reason,
       freezeEnd: freezeTicks[i], aSide: r.aSide, eq: eqByTick.get(freezeTicks[i]) || null,
@@ -268,6 +281,7 @@ export function duelsOf(a) {
 export function summarise(a) {
   return {
     file: a.file, slug: a.slug, map: a.map, n: a.nRounds, score: a.score, duels: duelsOf(a), date: a.date || 0, dsrc: a.dateSource || '',
+    teamNames: a.teamNames, sample: a.sample, title: a.title, event: a.event, source: a.source, credit: a.credit,
     players: a.players.map(p => ({ id: p.id, name: p.name, team: p.team, k: p.k, d: p.d, a: p.a, adr: p.adr, kast: p.kast, hs: p.hsPct, r: p.rating, ok: p.openK, od: p.openD })),
   };
 }
