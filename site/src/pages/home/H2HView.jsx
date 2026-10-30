@@ -71,9 +71,9 @@ export default function H2HView({ all, demos, h2h, setH2h }) {
   const nameOf = id => names[id] || id;
   let content;
   if (!A || !B || A === B) {
-    content = <div className="empty">Pick two different players above (or press ⚔ next to a name in the Players tab).</div>;
+    content = <div className="empty">Pick two players above, or press ⚔ in the Players tab.</div>;
   } else if (!body.pa || !body.pb) {
-    content = <div className="empty">{nameOf(!body.pa ? A : B)} has no matches in the selected date range.</div>;
+    content = <div className="empty">{nameOf(!body.pa ? A : B)} has no matches in this date range.</div>;
   } else {
     const { shared, useShared, pa, pb, ab, ba, abh, bah } = body;
     const open = x => (x.ok + x.od ? (100 * x.ok) / (x.ok + x.od) : 0);
@@ -88,8 +88,8 @@ export default function H2HView({ all, demos, h2h, setH2h }) {
           <div><div className="nm B">{nameOf(B)}</div><small>{pb.m} match{pb.m > 1 ? 'es' : ''} · rating {pb.r.toFixed(2)}</small></div>
         </div>
         {!shared.length
-          ? <div className="card muted">These two never appeared in the same demo, so there are no direct duels. Their overall stats are compared below.</div>
-          : !useShared && <div className="muted" style={{ marginBottom: 8 }}>Stats below cover all of each player's matches; the duel score and table cover shared matches only.</div>}
+          ? <div className="card muted">They haven't played in the same demo, so there are no duels. Overall stats below.</div>
+          : !useShared && <div className="muted" style={{ marginBottom: 8 }}>Stats cover all their matches. Duels and the table cover shared matches only.</div>}
         <div className="cmp">
           <Row label="Rating" a={pa.r} b={pb.r} dec={2} />
           <Row label="K/D" a={pa.kd} b={pb.kd} dec={2} />

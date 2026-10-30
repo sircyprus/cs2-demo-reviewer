@@ -99,7 +99,7 @@ export default function Viewer({ data, radar, slug }) {
             <button className={hud.trail ? 'on' : ''} onClick={() => E().setOpt('trail', !hud.trail)}>Trails</button>
             <button className={hud.names ? 'on' : ''} onClick={() => E().setOpt('names', !hud.names)}>Names</button>
             {hud.hasLower && <button onClick={() => E().setOpt('level', hud.level === 'upper' ? 'lower' : 'upper')}>Level: {hud.level}</button>}
-            <button className={hud.focus ? 'on' : ''} title="Fade everyone except the selected player (F). Click a player on the map or a card to select." onClick={() => E().toggleFocus()}>Focus</button>
+            <button className={hud.focus ? 'on' : ''} title="Fade everyone but the selected player (F). Click a player to select." onClick={() => E().toggleFocus()}>Focus</button>
             <button onClick={() => E().resetView()}>Reset view</button>
             <button className={hud.drawOn ? 'on' : ''} title="Draw on the paused frame (D)" onClick={() => E().setDraw(!hud.drawOn)}>✏ Draw</button>
           </div>
@@ -111,8 +111,8 @@ export default function Viewer({ data, radar, slug }) {
               <span className="rv-sw">{COLORS.map(c => <i key={c} className={hud.color === c ? 'on' : ''} style={{ background: c }} onClick={() => E().setColor(c)} />)}</span>
               <button onClick={() => E().undo()}>Undo</button>
               <button onClick={() => E().clearDrawings()}>Clear</button>
-              <button title="Save the current view as a PNG" onClick={() => E().savePng()}>📷 Save</button>
-              <span className="hint">Drawings belong to this paused frame</span>
+              <button title="Save as PNG" onClick={() => E().savePng()}>📷 Save</button>
+              <span className="hint">Stays on this frame</span>
             </div>
           )}
           <div className="rv-feed">

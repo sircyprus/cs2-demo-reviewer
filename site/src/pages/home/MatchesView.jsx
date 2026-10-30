@@ -46,7 +46,7 @@ export default function MatchesView({ demos, q, setQ, onRemove }) {
         </span>
       </div>
 
-      {!list.length ? <div className="empty">{demos.length ? 'No matches found.' : 'No demos yet. Add some above and they will appear here.'}</div> : (
+      {!list.length ? <div className="empty">{demos.length ? 'No matches found.' : 'No demos yet. Add some above.'}</div> : (
         <div className="grid">
           {list.map(d => (
             <div className="m" key={d.slug}>
@@ -57,7 +57,7 @@ export default function MatchesView({ demos, q, setQ, onRemove }) {
                   <span className="sc"><span className="A">{d.score.A}</span><span className="muted"> : </span><span className="B">{d.score.B}</span></span>
                 </div>
                 <div className="fn" title={d.file}>
-                  <span title={d.dsrc === 'filename' ? 'date from the filename' : 'file modified date (demos carry no match date)'}>📅 {fmtDate(d.date)}</span> · {d.n} rounds · {d.file}
+                  <span title={d.dsrc === 'filename' ? 'Date from the filename' : 'File date (demos have no match date)'}>📅 {fmtDate(d.date)}</span> · {d.n} rounds · {d.file}
                 </div>
                 <div className="tp">
                   {d.players.slice(0, 3).map(p => (
@@ -70,7 +70,7 @@ export default function MatchesView({ demos, q, setQ, onRemove }) {
                 <div className="ac">
                   <Link className="btn" to={`/demo/${d.slug}`}>Report</Link>
                   <Link className="btn pri" to={`/demo/${d.slug}/replay`}>▶ Replay</Link>
-                  {d.local && <span className="chip" title="Stored in this browser only">on this device</span>}
+                  {d.local && <span className="chip" title="Only in this browser">on this device</span>}
                   {d.local && <a className="btn" title="Remove from this browser" onClick={() => onRemove(d.slug)}>✕</a>}
                 </div>
               </div>

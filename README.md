@@ -1,6 +1,8 @@
-﻿# CS2 Demo Reviewer
+# CS2 Demo Reviewer
 
-A static React site. Visitors can browse the demos you pre-parsed **and** drop in their own demos, which are parsed in their browser (WebAssembly) and kept on their device only.
+Match reports and a 2D replay for Counter-Strike 2 demos. Demos are parsed in your browser and never uploaded.
+
+Live: https://sircyprus.github.io/cs2-demo-reviewer/
 
 ## Documentation
 

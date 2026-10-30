@@ -80,8 +80,8 @@ export default function AddDemos({ onAdded }) {
       onDragLeave={() => setOver(false)}
       onDrop={async e => { e.preventDefault(); setOver(false); add(await filesFromDrop(e.dataTransfer)); }}>
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-        <b>Add your own demos</b>
-        <span className="muted">Drop .dem / .zst / .bz2 / .gz / .zip files or folders here. They're parsed in your browser and stay on this device. Nothing is uploaded.</span>
+        <b>Add demos</b>
+        <span className="muted">Drop .dem, .zst, .bz2, .gz or .zip files (or folders) here.</span>
         <button className="btn" onClick={() => input.current.click()}>Choose files…</button>
         <input ref={input} type="file" multiple accept=".dem,.zst,.bz2,.gz,.zip" style={{ display: 'none' }}
           onChange={e => { add(e.target.files); e.target.value = ''; }} />

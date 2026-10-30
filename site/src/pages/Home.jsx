@@ -83,7 +83,7 @@ export default function Home() {
       <div className="top">
         <div>
           <h1>CS2 Demo Reviewer</h1>
-          <div className="muted">Add your demos below. They're parsed in your browser and never leave your device, so nobody else can see them.</div>
+          <div className="muted">Demos are read in your browser. Nothing is uploaded.</div>
         </div>
         <div className="stats">
           {stats.map(([label, v]) => <div className="stat" key={label}><b>{v}</b><span>{label}</span></div>)}

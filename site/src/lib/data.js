@@ -42,7 +42,7 @@ export function useDemoData(slug, kind) {
     const done = data => live && setS({ data, error: null });
     const fail = e => live && setS({ data: null, error: String((e && e.message) || e) });
     if (isLocal(slug)) {
-      getDemo(slug).then(rec => (rec ? done(rec[kind]) : fail('This demo is not stored in this browser (it may have been removed).')), fail);
+      getDemo(slug).then(rec => (rec ? done(rec[kind]) : fail("This demo isn't saved in this browser.")), fail);
     } else {
       fetchJson(asset(`data/${slug}${kind === 'replay' ? '.replay' : ''}.json`)).then(done, fail);
     }

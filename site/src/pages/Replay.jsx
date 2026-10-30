@@ -8,7 +8,7 @@ export default function Replay() {
   const maps = useJson(asset('maps/maps.json'));
 
   if (error) return <div className="page"><Link to="/">← all demos</Link><div className="card">Could not load this replay: {error}</div></div>;
-  if (!data || (!maps.data && !maps.error)) return <div className="page muted">Loading replay… (large demos can take a moment)</div>;
+  if (!data || (!maps.data && !maps.error)) return <div className="page muted">Loading replay…</div>;
   if (!data.frames.length) return <div className="page"><Link to="/">← all demos</Link><div className="card">This replay has no position data.</div></div>;
 
   const radar = maps.data?.[data.map] || null;

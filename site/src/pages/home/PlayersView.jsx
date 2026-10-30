@@ -24,8 +24,8 @@ export default function PlayersView({ demos, h2h, onCompare, onOpenPlayer }) {
     <>
       <div className="bar">
         <input placeholder="Search player…" value={q} onChange={e => setQ(e.target.value)} />
-        <span className="muted">Averages across the loaded demos (weighted by rounds). Click a header to sort, a name to see their matches, ⚔ to compare two players.</span>
-        {pending && <span className="A">Pick a second player with ⚔ to compare with {nameOf(h2h.a)}</span>}
+        <span className="muted">Averages across the demos shown. Click a name for their matches, ⚔ to compare.</span>
+        {pending && <span className="A">Pick a second player with ⚔ (first: {nameOf(h2h.a)})</span>}
       </div>
       <table>
         <thead>

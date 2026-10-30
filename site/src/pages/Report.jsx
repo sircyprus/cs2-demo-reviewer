@@ -54,7 +54,7 @@ export default function Report() {
       <h2 className="A">Team A ({a.score.A})</h2><Scoreboard players={team('A')} />
       <h2 className="B">Team B ({a.score.B})</h2><Scoreboard players={team('B')} />
       {unassigned.length > 0 && <><h2>Unassigned</h2><Scoreboard players={unassigned} /></>}
-      <p className="muted">*Rating is an approximation of HLTV 2.0 from kills, deaths, assists, KAST and ADR. KAST counts kill/assist/survival (trades not tracked). ADR counts enemy damage only.</p>
+      <p className="muted">*Rating is a rough HLTV 2.0 estimate. KAST ignores trades. ADR counts enemy damage only.</p>
 
       <h2>Rounds</h2>
       {a.rounds.map(r => (

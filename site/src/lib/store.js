@@ -1,4 +1,4 @@
-// Demos parsed in the visitor's browser are kept in IndexedDB (they never leave the device).
+// Demos parsed in the browser are kept in IndexedDB on the visitor's device.
 const DB = 'cs2dr', STORE = 'demos';
 
 const open = () => new Promise((resolve, reject) => {
