@@ -158,9 +158,9 @@ export default function Viewer({ data, radar, slug }) {
           <div className="rv-feed">
             {hud.feed.map((k, i) => (
               <div key={i}>
-                <span style={{ color: ['#e8a94b', '#5da9ff'][k[5]] || '#ccc' }}>{k[1] || 'World'}</span>{' '}
+                <span style={{ color: ['var(--T)', 'var(--CT)'][k[5]] || 'var(--mut)' }}>{k[1] || 'World'}</span>{' '}
                 <span style={{ color: 'var(--mut)' }}>{k[3]}{k[4] ? ' ⌖' : ''}</span>{' '}
-                <span style={{ color: ['#e8a94b', '#5da9ff'][k[6]] || '#ccc' }}>{k[2]}</span>
+                <span style={{ color: ['var(--T)', 'var(--CT)'][k[6]] || 'var(--mut)' }}>{k[2]}</span>
               </div>
             ))}
           </div>

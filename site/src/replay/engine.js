@@ -75,7 +75,7 @@ export class ReplayEngine {
     this.heat = { layer: 'off', side: -1, player: -1, rounds: { mode: 'all', from: 1, to: D.rounds.length } };
     this.heatDirty = false; this.heatCanvas = null; this.heatN = 0; this.heatCur = -1;
     // canvas background matches the --stage colour from the stylesheet
-    this.stage = getComputedStyle(document.documentElement).getPropertyValue('--stage').trim() || '#26092f';
+    this.stage = getComputedStyle(document.documentElement).getPropertyValue('--stage').trim() || '#c7a0e3';
     this.drawOn = false; this.tool = 'pen'; this.color = COLORS[0]; this.cur = null; this.ann = {};
     this.drag = null; this.tlDrag = false;
     this.nameIdx = {}; D.names.forEach((n, i) => { this.nameIdx[n] = i; });
@@ -296,9 +296,9 @@ export class ReplayEngine {
       if (t < u[0] || t > u[0] + u[4]) continue;
       const [x, y] = this.P(u[1], u[2]), age = (t - u[0]) / u[4], k = u[3];
       ctx.beginPath();
-      if (k === 'smoke') { ctx.arc(x, y, U * 0.026, 0, 7); ctx.fillStyle = 'rgba(205,210,215,' + (age > 0.85 ? 0.5 * (1 - age) / 0.15 : 0.5) + ')'; ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.stroke(); }
+      if (k === 'smoke') { ctx.arc(x, y, U * 0.026, 0, 7); ctx.fillStyle = 'rgba(110,100,150,' + (age > 0.85 ? 0.5 * (1 - age) / 0.15 : 0.5) + ')'; ctx.fill(); ctx.strokeStyle = 'rgba(60,40,100,.45)'; ctx.stroke(); }
       else if (k === 'fire') { ctx.arc(x, y, U * 0.018, 0, 7); ctx.fillStyle = 'rgba(255,110,30,.55)'; ctx.fill(); ctx.strokeStyle = 'rgba(255,170,60,.8)'; ctx.stroke(); }
-      else { const rr = U * (0.012 + 0.05 * age); ctx.arc(x, y, rr, 0, 7); ctx.strokeStyle = k === 'flash' ? 'rgba(255,255,255,' + (1 - age) + ')' : 'rgba(255,90,70,' + (1 - age) + ')'; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1; }
+      else { const rr = U * (0.012 + 0.05 * age); ctx.arc(x, y, rr, 0, 7); ctx.strokeStyle = k === 'flash' ? 'rgba(224,168,0,' + (1 - age) + ')' : 'rgba(255,90,70,' + (1 - age) + ')'; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1; }
     }
 
     // planted bomb
@@ -318,7 +318,7 @@ export class ReplayEngine {
       const A = this.playerAt(ai, this.pos), V = this.playerAt(vi, this.pos);
       if (!A || !V) continue;
       const [ax, ay] = this.P(A[0], A[1]), [vx, vy] = this.P(V[0], V[1]);
-      ctx.strokeStyle = 'rgba(255,255,255,' + (0.8 * (1 - (t - k[0]) / 80)) + ')'; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(vx, vy); ctx.stroke();
+      ctx.strokeStyle = 'rgba(60,10,80,' + (0.8 * (1 - (t - k[0]) / 80)) + ')'; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(vx, vy); ctx.stroke();
     }
 
     // players: dead first, then alive on top. Focus mode softens everyone except the selected player.
@@ -349,8 +349,8 @@ export class ReplayEngine {
       ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
       ctx.strokeStyle = q[3] > 50 ? '#4fd37a' : q[3] > 25 ? '#e8c14b' : '#e5534b'; ctx.lineWidth = 2 * dpr;
       ctx.beginPath(); ctx.arc(x, y, r + 3 * dpr, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * q[3] / 100); ctx.stroke(); ctx.lineWidth = 1;
-      if (i === this.selected) { ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y, r + 7 * dpr, 0, 7); ctx.stroke(); }
-      if (this.names && !dim) { ctx.font = '600 ' + fs + 'px system-ui,sans-serif'; ctx.fillStyle = '#fff'; ctx.shadowColor = '#000'; ctx.shadowBlur = 4; ctx.fillText(D.names[i], x + r + 6 * dpr, y - r); ctx.shadowBlur = 0; }
+      if (i === this.selected) { ctx.strokeStyle = '#2b0a3f'; ctx.beginPath(); ctx.arc(x, y, r + 7 * dpr, 0, 7); ctx.stroke(); }
+      if (this.names && !dim) { ctx.font = '600 ' + fs + 'px system-ui,sans-serif'; ctx.fillStyle = '#2b0a3f'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 5; ctx.fillText(D.names[i], x + r + 6 * dpr, y - r); ctx.shadowBlur = 0; }
       ctx.globalAlpha = 1;
     }
     // annotations belong to the paused frame
@@ -388,24 +388,24 @@ export class ReplayEngine {
       const x0 = X(r.start) + 1, x1 = X(r.end) - 1, rw = x1 - x0, cw = rw / d, on = i === curR;
       g.fillStyle = on ? (r.winner === 'T' ? '#c9902f' : r.winner === 'CT' ? '#3d86cf' : '#666') : (r.winner === 'T' ? '#8a6428' : r.winner === 'CT' ? '#2a6aa8' : '#444');
       g.fillRect(x0, barY, rw, barH);
-      if (on) { g.strokeStyle = '#fff'; g.lineWidth = 1.5 * d; g.strokeRect(x0, barY, rw, barH); }
-      g.textBaseline = 'alphabetic'; g.fillStyle = on ? '#fff' : '#9aa5b3'; g.font = font(11, on ? '700' : '600');
+      if (on) { g.strokeStyle = '#2b0a3f'; g.lineWidth = 1.5 * d; g.strokeRect(x0, barY, rw, barH); }
+      g.textBaseline = 'alphabetic'; g.fillStyle = on ? '#2b0a3f' : '#5e2f7d'; g.font = font(11, on ? '700' : '600');
       const sc = this.RSCORE[i][0] + '–' + this.RSCORE[i][1];
       g.fillText(cw > 64 ? 'R' + r.n + '  ' + sc : cw > 26 ? r.n : '', x0 + 2 * d, 12 * d);
       const [ic, tx] = reasonOf(r.reason); g.font = font(11, '500');
       if (cw >= 22) g.fillText(cw > 92 ? ic + ' ' + tx : ic, x0 + 2 * d, barY + barH + 13 * d);
     });
-    for (const k of D.kills) { g.fillStyle = k[5] === 0 ? '#ffd9a0' : k[5] === 1 ? '#bfe0ff' : '#fff'; g.fillRect(X(k[0]) - d * 0.75, barY + barH - 13 * d, d * 1.5, 11 * d); }
+    for (const k of D.kills) { g.fillStyle = k[5] === 0 ? '#c76a10' : k[5] === 1 ? '#1d5fd0' : '#5e2f7d'; g.fillRect(X(k[0]) - d * 0.75, barY + barH - 13 * d, d * 1.5, 11 * d); }
     for (const e of D.bomb) {
       if (e[1] !== 'plant') continue;
       const x = X(e[0]), y = barY + 7 * d;
       g.fillStyle = '#ff4d3d'; g.beginPath(); g.moveTo(x, y - 5 * d); g.lineTo(x + 5 * d, y); g.lineTo(x, y + 5 * d); g.lineTo(x - 5 * d, y); g.fill();
     }
     const hr = D.rounds[12];
-    if (hr) { const x = X(hr.start) - 1; g.strokeStyle = '#ffffff55'; g.setLineDash([3 * d, 3 * d]); g.beginPath(); g.moveTo(x, barY - 2 * d); g.lineTo(x, barY + barH + 2 * d); g.stroke(); g.setLineDash([]); }
+    if (hr) { const x = X(hr.start) - 1; g.strokeStyle = '#2b0a3f66'; g.setLineDash([3 * d, 3 * d]); g.beginPath(); g.moveTo(x, barY - 2 * d); g.lineTo(x, barY + barH + 2 * d); g.stroke(); g.setLineDash([]); }
     // playhead
     const px = X(this.tickOf(this.pos));
-    g.fillStyle = '#fff'; g.fillRect(px - d, barY - 4 * d, 2 * d, barH + 8 * d);
+    g.fillStyle = '#2b0a3f'; g.fillRect(px - d, barY - 4 * d, 2 * d, barH + 8 * d);
   }
   tlTick(clientX) { const r = this.tl.getBoundingClientRect(), f = Math.min(1, Math.max(0, (clientX - r.left) / r.width)); return this.F[0][0] + f * (this.F[this.nF - 1][0] - this.F[0][0]); }
   roundTip(clientX) {
@@ -416,6 +416,8 @@ export class ReplayEngine {
 
   // ---------- loop ----------
   loop(ts) {
+    // pick up changes to the stage colour (cheap: twice a second)
+    if ((this.frameNo = (this.frameNo || 0) + 1) % 30 === 0) this.stage = getComputedStyle(document.documentElement).getPropertyValue('--stage').trim() || this.stage;
     const dt = Math.min(0.1, (ts - this.lastTs) / 1000); this.lastTs = ts;
     if (this.playing) {
       this.pos += dt * this.speed * TPS / this.step;

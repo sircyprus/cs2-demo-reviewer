@@ -21,12 +21,12 @@ Everything else is derived from these. All values are CSS variables in `site/src
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `--page` | Gradient `#ffd9ec → #FFC0DE → #f4a8e0 → #e48ad6` | Page background |
+| `--page` | Soft gradient `#fff3f9 → #ffe0f0 → #ffcde8 → #f9c4ec` (kept pale on purpose; deeper pinks looked heavy) | Page background |
 | `--glass` / `--glass2` | White at 58 % / 82 % | Cards, bars, inputs |
 | `--glass-line` | White at 90 % | Card borders |
 | `--line` | `rgba(142,30,162,.28)` | Dividers |
 | `--ink` / `--mut` | `#3a0f46` / `#7d3f8b` | Text / secondary text |
-| `--stage` | `#26092f` | Behind the replay map and timeline |
+| `--stage` / `--tlbg` | `#c7a0e3` / `#d2b0ea` | Behind the replay map and timeline: light lilac, so the map pops without a dark slab |
 
 ## Data colours
 
@@ -40,7 +40,7 @@ These carry meaning in the game and are tuned for contrast on the light glass; t
 | Team B (`--B`) | `#0b7f78` |
 | Good / Bad / Warning | `#1e8e4e` / `#c0352d` / `#a87400` |
 
-Side colours (T/CT) are for in-game things only (players, rounds, kill feed). Team colours (A/B) are for scoreboards and head-to-head. The replay canvas draws players with brighter fixed T/CT colours because it always sits on the dark stage.
+Side colours (T/CT) are for in-game things only (players, rounds, kill feed). Team colours (A/B) are for scoreboards and head-to-head. The replay canvas draws players with fixed T/CT colours that read on the lilac stage.
 
 ## Type
 
@@ -53,7 +53,7 @@ Side colours (T/CT) are for in-game things only (players, rounds, kill feed). Te
 - Pills for anything clickable (radius 99 px); 16-22 px radius on cards, 12 px on inner tiles.
 - **Glass**: translucent fill, 2 px light border, soft purple shadow, `backdrop-filter: blur(10px)`, 1 px inner top highlight.
 - **Candy buttons**: vertical gradient with a hard edge at 50 % (`--btn-*`), 1 px border, glow, white text-shadow. Primary and active buttons use the `--pri-*` set (deep purple with a pink highlight) and white text.
-- **Monitors**: the replay map and the timeline sit in dark screens with a 3 px white bezel plus a `--p2` ring, so map colours stay readable.
+- **Monitors**: the replay map and the timeline sit in lilac screens with a 3 px white bezel plus a `--p2` ring. Canvas text and lines on them are dark plum (`#2b0a3f`) with a white halo; smoke is slate, flash rings are gold.
 - **Sparkle**: the heading star (✦) and a few tiny white bubbles and glows in the page background. Keep decoration in the background layer; never put it behind text.
 
 ## Components
@@ -61,7 +61,7 @@ Side colours (T/CT) are for in-game things only (players, rounds, kill feed). Te
 - `.btn` secondary: glossy light button. `.btn.pri`: glossy purple. One primary per card.
 - `.chip` outline pill; `.on` = primary gloss. `.tabs` is a pill track with a primary-gloss active tab.
 - `.card`, `.stat`, `.m` (match), `.cmp`, `.vs`, `table`, `details`: all glass.
-- Replay: floating glass HUD pill, glass player cards with a side-coloured left edge, health bars with a glossy fill, kill feed and tools as dark glass pills over the map.
+- Replay: floating glass HUD pill, glass player cards with a side-coloured left edge, health bars with a glossy fill, kill feed, tools, heatmap and drawing panels as white glass over the map.
 
 ## Replay canvas conventions
 
