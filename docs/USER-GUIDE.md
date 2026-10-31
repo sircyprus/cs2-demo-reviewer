@@ -2,7 +2,7 @@
 
 Masturbatorium turns Counter-Strike 2 demo files into match reports and an interactive 2D replay. It runs entirely in your browser; nothing you add is uploaded.
 
-Live site: https://sircyprus.github.io/cs2-demo-reviewer/
+Live site: https://themasturbatorium.com/
 
 ## Adding demos
 

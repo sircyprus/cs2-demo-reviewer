@@ -2,7 +2,7 @@
 
 Match reports and a 2D replay for Counter-Strike 2 demos. Demos are parsed in your browser and never uploaded.
 
-Live: https://sircyprus.github.io/cs2-demo-reviewer/
+Live: https://themasturbatorium.com/
 
 ## Documentation
 
@@ -27,6 +27,18 @@ The site is plain static files; `.github/workflows/pages.yml` builds it and publ
 
 1. Create a **public** repository (free GitHub Pages needs one) and push this folder to its `main` branch.
 2. In the repo: **Settings → Pages → Source: GitHub Actions**. The site publishes at `https://<you>.github.io/<repo>/`.
+
+### Custom domain (themasturbatorium.com)
+
+The site is served from **https://themasturbatorium.com/**. The old `sircyprus.github.io/cs2-demo-reviewer/` address, `http://` and `www.` all redirect to it. The domain is owned by a friend and is verified for the `sircyprus` GitHub account (Settings → Pages → Verified domains). DNS at the registrar:
+
+| Type | Name | Value |
+| --- | --- | --- |
+| A | `@` | `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` (four records) |
+| CNAME | `www` | `sircyprus.github.io` |
+| TXT | `_github-pages-challenge-sircyprus` | the verification code GitHub shows under Verified domains |
+
+The custom domain and **Enforce HTTPS** are set in the repo's Pages settings. Don't add wildcard DNS records, and keep the TXT record so the domain stays verified. Note: demos a visitor saves in their browser are stored per address, so anything saved on the old `github.io` address does not appear on the new one.
 
 ## How it fits together
 

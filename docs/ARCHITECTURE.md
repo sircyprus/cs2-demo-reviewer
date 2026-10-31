@@ -95,7 +95,7 @@ Radar calibration comes from Valve's overview files (`pos_x`, `pos_y`, `scale`; 
 1. Commit and push to `main`. (`site/public/data/` and `demos/` are git-ignored, so no demo data is ever published.)
 2. `pages.yml` runs `npm ci && npm run build` in `site/` and deploys `site/dist`. Repo Settings → Pages → Source must be **GitHub Actions**.
 
-The repo must be public for free GitHub Pages. The deployed site contains only the app: no demo data, names or SteamIDs. Demos a visitor adds are parsed in their browser and stored only in that browser. (Locally generated data still uses a `cyrb53` hash instead of SteamIDs; that is obfuscation, not strong anonymisation.)
+The repo must be public for free GitHub Pages. The site is served from the custom domain https://themasturbatorium.com/ (see the README for the DNS records). The deployed site contains only the app: no demo data, names or SteamIDs. Demos a visitor adds are parsed in their browser and stored only in that browser. (Locally generated data still uses a `cyrb53` hash instead of SteamIDs; that is obfuscation, not strong anonymisation.)
 
 ## Licences and assets
 
