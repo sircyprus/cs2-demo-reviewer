@@ -54,12 +54,16 @@ Open with **▶ Replay**. The map shows every player (T orange, CT blue) with vi
 | , / . | Previous / next round |
 | Mouse wheel, drag | Zoom, pan (**Reset view** to recentre) |
 | F | Focus mode on the selected player |
+| V | POV mode on the selected player |
+| [ ] | Previous / next player while in POV |
 | H | Show / hide the heatmap panel |
 | D | Toggle drawing (while paused) |
 | Esc | Leave drawing |
 | Ctrl+Z | Undo last drawing |
 
 **Focus mode:** click a player on the map or a player card to select them, then press **Focus** (or **F**). Everyone else fades and shrinks (no cone or name) and the selected player gets a longer trail, so you can follow one person's round. Click the player again, or press F, to switch it off.
+
+**POV mode:** select a player, then press **POV** (or **V**). The camera follows them and turns the map so they always face up. A white wedge shows their 106° field of view, enemies inside it get a red ring, and enemies outside it fade out (untick the box in the panel to see everyone). The panel shows health, weapon, money, heading and how far up or down they are looking; the arrows (or `[` and `]`) switch player. There is no map geometry, so walls are ignored: an enemy in the wedge may be behind a wall. Demos added before this feature have no pitch; add them again to see up/down.
 
 **Heatmaps:** press **Heatmap** (or **H**) to overlay one of three layers on the radar:
 - **Deaths**: where players died.

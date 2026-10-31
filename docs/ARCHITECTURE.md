@@ -80,7 +80,7 @@ Everything under `site/public/data/`:
 | --- | --- |
 | `index.json` | `{ demos: [summary…], failed: [{file, err}] }`. Summary = file, slug, map, rounds, score, date, duels (`"attackerId>victimId": [kills, headshots]`), and a short line per player. |
 | `<slug>.json` | Full analysis: rounds (winner, reason, kills with tags), players (scoreboard stats, team), `startTick`, `endTicks`, `roundStarts`, date and its source. |
-| `<slug>.replay.json` | `frames: [[tick, [[x, y, z, hp, yaw, side, armor, weaponIdx, money] \| null, …]], …]` sampled every 8 ticks; `util` (smokes, fire, flashes, HE with durations); `bomb`; `kills`; `rounds` (start/end/freeze end, winner, `eq` economy per side); `weapons`, `names`, hashed `ids`. |
+| `<slug>.replay.json` | `frames: [[tick, [[x, y, z, hp, yaw, side, armor, weaponIdx, money, pitch] \| null, …]], …]` sampled every 8 ticks; `util` (smokes, fire, flashes, HE with durations); `bomb`; `kills`; `rounds` (start/end/freeze end, winner, `eq` economy per side); `weapons`, `names`, hashed `ids`. |
 
 Radar calibration comes from Valve's overview files (`pos_x`, `pos_y`, `scale`; `lowerBelow` for two-level maps) turned into `maps/maps.json`.
 

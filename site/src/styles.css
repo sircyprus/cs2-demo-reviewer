@@ -149,6 +149,16 @@ summary{cursor:pointer;font-weight:700}.k{margin-left:18px;color:var(--ink);padd
 .rv-sw{display:flex;gap:5px;padding:0 4px}.rv-sw i{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;display:block;box-shadow:inset 0 3px 3px rgba(255,255,255,.55)}.rv-sw i.on{border-color:#fff}
 .rv-heat{position:absolute;left:10px;bottom:10px;width:268px;display:grid;gap:7px;padding:10px}
 .rv-heat .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.rv-heat .row>span:first-child{width:46px;color:var(--mut);font-size:11px;font-weight:700}
+.rv-pov{position:absolute;right:10px;bottom:10px;width:min(250px,calc(100% - 20px));display:grid;gap:7px;padding:10px;background:rgba(255,255,255,.9);border:2px solid #fff;border-radius:18px;color:var(--ink);box-shadow:0 8px 24px rgba(110,40,170,.3);font-size:12px}
+.rv-pov .top{display:flex;align-items:center;justify-content:space-between;gap:6px}.rv-pov .top b{font-size:14px}.rv-pov .top b.T{color:var(--T)}.rv-pov .top b.CT{color:var(--CT)}
+.rv-pov .top button{padding:2px 9px}
+.rv-pov .body{display:flex;gap:10px}.rv-pov .info{flex:1;display:grid;gap:5px;min-width:0}
+.rv-pov .row{display:flex;justify-content:space-between;gap:6px}.rv-pov .row>span:first-child{color:var(--mut)}.rv-pov .row b.seen{color:var(--bad)}
+.rv-pov .gauge{position:relative;width:22px;min-height:110px;border-radius:99px;background:linear-gradient(180deg,#fff,var(--p4));border:1px solid var(--line)}
+.rv-pov .gauge .mid{position:absolute;left:3px;right:3px;top:50%;height:1px;background:var(--line)}
+.rv-pov .gauge .mark{position:absolute;left:2px;right:2px;height:6px;margin-top:-3px;border-radius:99px;background:var(--p1);box-shadow:0 0 0 2px #fff}
+.rv-pov .gauge .u,.rv-pov .gauge .d{position:absolute;left:0;right:0;text-align:center;font-size:8px;color:var(--mut);text-transform:uppercase}.rv-pov .gauge .u{top:2px}.rv-pov .gauge .d{bottom:2px}
+.rv-pov .chk{display:flex;gap:6px;align-items:center;color:var(--ink)}.rv-pov .hint{color:var(--mut);font-size:11px}
 .rv-heat select{max-width:150px}.rv-heat .legend{height:9px;border-radius:99px;border:1px solid var(--line)}
 .rv-bottom{margin:0 12px 12px;padding:8px 14px 10px;border-radius:22px;background:var(--glass);border:2px solid var(--glass-line);box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.55);backdrop-filter:blur(10px)}
 .rv-rinfo{display:flex;gap:14px;flex-wrap:wrap;align-items:center;min-height:24px;margin-bottom:8px;padding:5px 14px;background:var(--glass2);border:1px solid var(--line);border-radius:99px;font-size:12px;color:var(--mut);font-weight:600}

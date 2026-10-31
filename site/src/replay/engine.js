@@ -68,6 +68,8 @@ export class ReplayEngine {
     this.b = b;
 
     this.view = { cx: 0.5, cy: 0.5, k: 1 };
+    this.rot = 0; this.piv = [0, 0];
+    this.pov = false; this.povFog = true; this.povPrev = null; this.povInView = 0;
     this.W = this.H = this.S = 0; this.dpr = 1;
     this.playing = false; this.speed = 2; this.lastTs = 0; this.lastHud = 0;
     this.trail = true; this.names = true; this.level = 'upper'; this.selected = -1; this.focus = false;
@@ -97,8 +99,20 @@ export class ReplayEngine {
     return [(x - (b.x0 + b.x1) / 2) / m + 0.5, 0.5 - (y - (b.y0 + b.y1) / 2) / m];
   }
   levelOf(z) { const r = this.radar; return r && r.hasLower && r.lowerBelow != null && z < r.lowerBelow ? 'lower' : 'upper'; }
-  toScr(u, v) { return [(u - this.view.cx) * this.view.k * this.S + this.W / 2, (v - this.view.cy) * this.view.k * this.S + this.H / 2]; }
-  toMap(sx, sy) { return [(sx - this.W / 2) / (this.view.k * this.S) + this.view.cx, (sy - this.H / 2) / (this.view.k * this.S) + this.view.cy]; }
+  // Map (0..1) <-> canvas pixels. In POV mode the map is also rotated by this.rot about the pivot (the followed player).
+  toScr(u, v) {
+    const s = this.view.k * this.S, x = (u - this.view.cx) * s, y = (v - this.view.cy) * s, c = Math.cos(this.rot), n = Math.sin(this.rot);
+    return [x * c - y * n + this.piv[0], x * n + y * c + this.piv[1]];
+  }
+  toMap(sx, sy) {
+    const s = this.view.k * this.S, x = sx - this.piv[0], y = sy - this.piv[1], c = Math.cos(this.rot), n = Math.sin(this.rot);
+    return [(x * c + y * n) / s + this.view.cx, (-x * n + y * c) / s + this.view.cy];
+  }
+  // Canvas transform equivalent to toScr, so images in unit map coordinates (0..1) can be drawn directly.
+  mapTransform(g) {
+    const s = this.view.k * this.S;
+    g.translate(this.piv[0], this.piv[1]); g.rotate(this.rot); g.scale(s, s); g.translate(-this.view.cx, -this.view.cy);
+  }
   P(x, y) { const w = this.world(x, y); return this.toScr(w[0], w[1]); }
 
   fit() {
@@ -107,6 +121,45 @@ export class ReplayEngine {
     this.W = this.cv.width = Math.round(r.width * this.dpr); this.H = this.cv.height = Math.round(r.height * this.dpr); this.S = Math.min(this.W, this.H);
     r = this.tl.getBoundingClientRect();
     this.tl.width = Math.round(r.width * this.dpr); this.tl.height = Math.round(r.height * this.dpr);
+    this.piv = [this.W / 2, this.H / 2];
+  }
+
+  // ---------- POV: follow the selected player with the map turned so they face up ----------
+  // CS2's horizontal field of view is 90 degrees at 4:3, about 106 at 16:9.
+  static FOV = 106;
+  updateCamera() {
+    this.rot = 0; this.piv = [this.W / 2, this.H / 2];
+    this.povInView = 0;
+    if (!this.pov) return;
+    const q = this.selected >= 0 ? this.playerAt(this.selected, this.pos) : null;
+    if (!q) return;
+    const [u, v] = this.world(q[0], q[1]);
+    this.view.cx = u; this.view.cy = v;
+    this.rot = q[4] * Math.PI / 180 - Math.PI / 2;
+    this.piv = [this.W / 2, this.H * 0.68]; // leave more room ahead of the player than behind
+    if (this.radar && this.radar.hasLower) { const lv = this.levelOf(q[2]); if (lv !== this.level) { this.level = lv; this.heatDirty = true; } }
+  }
+  // angle in degrees between where `q` looks and where `o` is (0 = dead ahead), ignoring walls
+  bearing(q, o) { const a = Math.atan2(o[1] - q[1], o[0] - q[0]) * 180 / Math.PI; return ((a - q[4] + 540) % 360) - 180; }
+  inFov(q, o) { return Math.abs(this.bearing(q, o)) <= ReplayEngine.FOV / 2; }
+  setPov(on, silent) {
+    if (on === this.pov) return;
+    if (on) {
+      if (this.selected < 0) { const i = this.nearestPlayer(this.W / 2, this.H / 2); if (i < 0) return; this.selected = i; }
+      this.povPrev = { ...this.view }; this.pov = true; this.focus = false;
+      this.view.k = Math.max(this.view.k, 2.8);
+    } else {
+      this.pov = false; if (this.povPrev) this.view = this.povPrev; this.povPrev = null;
+    }
+    if (!silent) this.emit();
+  }
+  togglePov() { this.setPov(!this.pov); }
+  setPovFog(on) { this.povFog = on; this.emit(); }
+  // step to the next / previous living player (any side) while in POV
+  cyclePov(d) {
+    const live = []; for (let i = 0; i < this.D.ids.length; i++) { const q = this.playerAt(i, this.pos); if (q && q[3] > 0 && q[5] >= 0) live.push(i); }
+    if (!live.length) return;
+    const at = live.indexOf(this.selected); this.selected = live[(at + d + live.length) % live.length]; this.emit();
   }
 
   // ---------- time ----------
@@ -122,7 +175,7 @@ export class ReplayEngine {
     const dx = B[0] - A[0], dy = B[1] - A[1];
     if (dx * dx + dy * dy > 600 * 600) return A;
     const dyaw = ((B[4] - A[4] + 540) % 360) - 180;
-    return [A[0] + dx * f, A[1] + dy * f, A[2] + (B[2] - A[2]) * f, A[3], A[4] + dyaw * f, A[5], A[6], A[7], A[8]];
+    return [A[0] + dx * f, A[1] + dy * f, A[2] + (B[2] - A[2]) * f, A[3], A[4] + dyaw * f, A[5], A[6], A[7], A[8], A[9] == null || B[9] == null ? A[9] : A[9] + (B[9] - A[9]) * f];
   }
 
   // ---------- per-round analysis (entry / multi-kills / clutches), revealed progressively ----------
@@ -187,8 +240,17 @@ export class ReplayEngine {
       result: t >= R.end && R.winner ? { winner: R.winner, reason: R.reason } : null,
     };
 
+    let pov = null;
+    if (this.pov && this.selected >= 0) {
+      const q = this.playerAt(this.selected, p);
+      if (q) pov = {
+        i: this.selected, name: D.names[this.selected], side: q[5], hp: q[3], armor: q[6], money: q[8], weapon: D.weapons[q[7]] || '',
+        yaw: ((Math.round(q[4]) % 360) + 360) % 360, pitch: q[9] == null ? null : Math.round(q[9]), inView: this.povInView, fog: this.povFog, fov: ReplayEngine.FOV,
+      };
+    }
+
     return {
-      playing: this.playing, speed: this.speed, drawOn: this.drawOn, tool: this.tool, color: this.color,
+      pov, playing: this.playing, speed: this.speed, drawOn: this.drawOn, tool: this.tool, color: this.color,
       trail: this.trail, names: this.names, level: this.level, focus: this.focus, selected: this.selected, heat: this.heat, heatN: this.heatN, nRounds: D.rounds.length, hasLower: !!(this.radar && this.radar.hasLower),
       clock: { big, small, bomb, round: R.n, total: D.rounds.length },
       scoreT: tIsA ? sA : sB, scoreCT: tIsA ? sB : sA, teamT: tIsA ? (D.teamNames?.A || 'Team A') : (D.teamNames?.B || 'Team B'), teamCT: tIsA ? (D.teamNames?.B || 'Team B') : (D.teamNames?.A || 'Team A'),
@@ -283,13 +345,15 @@ export class ReplayEngine {
   draw() {
     const { ctx, D, W, H, S, view, dpr } = this;
     const t = this.tickOf(this.pos), R = D.rounds[this.roundIdx(t)];
+    this.updateCamera();
     ctx.fillStyle = this.stage; ctx.fillRect(0, 0, W, H);
-    const tl0 = this.toScr(0, 0), br = this.toScr(1, 1);
     const want = this.imgs[this.level], img = want && want.complete && want.naturalWidth ? want : (this.imgs.upper && this.imgs.upper.complete ? this.imgs.upper : null);
-    if (img) { ctx.globalAlpha = 0.9; ctx.drawImage(img, tl0[0], tl0[1], br[0] - tl0[0], br[1] - tl0[1]); ctx.globalAlpha = 1; }
-    else { ctx.strokeStyle = '#222a35'; ctx.strokeRect(tl0[0], tl0[1], br[0] - tl0[0], br[1] - tl0[1]); }
-    if (this.heatCanvas) { ctx.imageSmoothingEnabled = true; ctx.drawImage(this.heatCanvas, tl0[0], tl0[1], br[0] - tl0[0], br[1] - tl0[1]); }
-    const U = S * view.k;
+    ctx.save(); this.mapTransform(ctx);
+    if (img) { ctx.globalAlpha = 0.9; ctx.drawImage(img, 0, 0, 1, 1); ctx.globalAlpha = 1; }
+    else { ctx.strokeStyle = '#222a35'; ctx.lineWidth = 1 / (S * view.k); ctx.strokeRect(0, 0, 1, 1); }
+    if (this.heatCanvas) { ctx.imageSmoothingEnabled = true; ctx.drawImage(this.heatCanvas, 0, 0, 1, 1); }
+    ctx.restore();
+    const U = S * view.k, rot = this.rot;
 
     // utility effects
     for (const u of D.util) {
@@ -322,7 +386,8 @@ export class ReplayEngine {
     }
 
     // players: dead first, then alive on top. Focus mode softens everyone except the selected player.
-    const fo = this.focus && this.selected >= 0;
+    const fo = this.focus && this.selected >= 0 && !this.pov;
+    const sq = this.pov && this.selected >= 0 ? this.playerAt(this.selected, this.pos) : null;
     const alive = [], dead = [];
     for (let i = 0; i < D.ids.length; i++) { const q = this.playerAt(i, this.pos); if (!q) continue; (q[3] > 0 ? alive : dead).push([i, q]); }
     for (const [i, q] of dead) {
@@ -332,10 +397,25 @@ export class ReplayEngine {
     }
     const fs = Math.max(10 * dpr, U * 0.014), F = this.F, hasLower = this.radar && this.radar.hasLower;
     // draw the focused player last so they sit on top
-    if (fo) alive.sort((a, b) => (a[0] === this.selected) - (b[0] === this.selected));
+    if (fo || sq) alive.sort((a, b) => (a[0] === this.selected) - (b[0] === this.selected));
+    // POV: the view wedge under everything else, so players inside it stay readable
+    if (sq && sq[3] > 0) {
+      const [px, py] = this.P(sq[0], sq[1]), a = -sq[4] * Math.PI / 180 + rot, half = ReplayEngine.FOV / 2 * Math.PI / 180, len = U * 0.2;
+      const gr = ctx.createRadialGradient(px, py, 0, px, py, len);
+      gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(1, 'rgba(255,255,255,.04)');
+      ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(px, py); ctx.arc(px, py, len, a - half, a + half); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(43,10,63,.35)'; ctx.lineWidth = 1.5 * dpr; ctx.beginPath();
+      ctx.moveTo(px + Math.cos(a - half) * len, py + Math.sin(a - half) * len); ctx.lineTo(px, py); ctx.lineTo(px + Math.cos(a + half) * len, py + Math.sin(a + half) * len); ctx.stroke(); ctx.lineWidth = 1;
+    }
+    let inView = 0;
     for (const [i, q] of alive) {
       const [x, y] = this.P(q[0], q[1]), c = COL[q[5]] || '#999', onLvl = !hasLower || this.levelOf(q[2]) === this.level;
-      const dim = fo && i !== this.selected, base = (onLvl ? 1 : 0.28) * (dim ? 0.35 : 1);
+      const isPov = sq && i === this.selected;
+      // POV fog: enemies outside the wedge fade out (no walls, so this is the field of view only, not line of sight)
+      const enemy = sq && !isPov && q[5] !== sq[5], seen = enemy && sq[3] > 0 && this.inFov(sq, q);
+      if (seen) inView++;
+      const hid = enemy && this.povFog && !seen;
+      const dim = (fo && i !== this.selected) || hid, base = (onLvl ? 1 : 0.28) * (fo && dim ? 0.35 : hid ? 0.12 : 1);
       ctx.globalAlpha = base;
       if (this.trail) {
         ctx.strokeStyle = c; ctx.globalAlpha = base * (dim ? 0.3 : 0.45); ctx.beginPath();
@@ -343,16 +423,21 @@ export class ReplayEngine {
         for (let j = Math.max(0, Math.floor(this.pos) - (fo && !dim ? 16 : 8)); j <= Math.floor(this.pos); j++) { const o = F[j][1][i]; if (!o || o[3] <= 0) continue; const s = this.P(o[0], o[1]); first ? ctx.moveTo(s[0], s[1]) : ctx.lineTo(s[0], s[1]); first = false; }
         ctx.lineTo(x, y); ctx.stroke(); ctx.globalAlpha = base;
       }
-      const a = q[4] * Math.PI / 180, r = U * 0.0095 * (dim ? 0.7 : fo ? 1.15 : 1);
-      if (!dim) { ctx.fillStyle = c + (fo ? '44' : '33'); ctx.beginPath(); ctx.moveTo(x, y); ctx.arc(x, y, U * (fo ? 0.055 : 0.04), -a - 0.45, -a + 0.45); ctx.closePath(); ctx.fill(); }
+      const a = q[4] * Math.PI / 180 - rot, r = U * 0.0095 * (dim ? 0.7 : fo || isPov ? 1.15 : 1);
+      if (!dim && !isPov) { ctx.fillStyle = c + (fo ? '44' : '33'); ctx.beginPath(); ctx.moveTo(x, y); ctx.arc(x, y, U * (fo ? 0.055 : 0.04), -a - 0.45, -a + 0.45); ctx.closePath(); ctx.fill(); }
       ctx.fillStyle = '#10141a'; ctx.beginPath(); ctx.arc(x, y, r + 2 * dpr, 0, 7); ctx.fill();
       ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
       ctx.strokeStyle = q[3] > 50 ? '#4fd37a' : q[3] > 25 ? '#e8c14b' : '#e5534b'; ctx.lineWidth = 2 * dpr;
       ctx.beginPath(); ctx.arc(x, y, r + 3 * dpr, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * q[3] / 100); ctx.stroke(); ctx.lineWidth = 1;
       if (i === this.selected) { ctx.strokeStyle = '#2b0a3f'; ctx.beginPath(); ctx.arc(x, y, r + 7 * dpr, 0, 7); ctx.stroke(); }
-      if (this.names && !dim) { ctx.font = '600 ' + fs + 'px system-ui,sans-serif'; ctx.fillStyle = '#2b0a3f'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 5; ctx.fillText(D.names[i], x + r + 6 * dpr, y - r); ctx.shadowBlur = 0; }
+      if (seen) { ctx.strokeStyle = '#ff4d3d'; ctx.lineWidth = 2.5 * dpr; ctx.beginPath(); ctx.arc(x, y, r + 8 * dpr, 0, 7); ctx.stroke(); ctx.lineWidth = 1; }
+      if (this.names && !dim) {
+        // positions are already rotated by toScr, so the text itself stays upright
+        ctx.font = '600 ' + fs + 'px system-ui,sans-serif'; ctx.fillStyle = '#2b0a3f'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 5; ctx.fillText(D.names[i], x + r + 6 * dpr, y - r); ctx.shadowBlur = 0;
+      }
       ctx.globalAlpha = 1;
     }
+    this.povInView = inView;
     // annotations belong to the paused frame
     if (!this.playing) for (const s of (this.ann[Math.round(this.pos)] || [])) this.drawShape(s);
     if (this.cur) this.drawShape(this.cur);
@@ -440,9 +525,14 @@ export class ReplayEngine {
     n = Math.max(0, Math.min(this.D.rounds.length - 1, n)); this.pos = this.frameOfTick(this.D.rounds[n].start); this.emit();
   }
   setOpt(k, v) { this[k] = v; if (k === 'level') this.heatDirty = true; this.emit(); }
-  resetView() { this.view = { cx: 0.5, cy: 0.5, k: 1 }; }
-  selectPlayer(i) { this.selected = this.selected === i ? -1 : i; if (this.selected < 0) this.focus = false; this.emit(); }
-  toggleFocus() { if (this.selected < 0) { const i = this.nearestPlayer(this.W / 2, this.H / 2); if (i >= 0) this.selected = i; } this.focus = !this.focus && this.selected >= 0; this.emit(); }
+  resetView() { if (this.pov) this.view.k = 2.8; else this.view = { cx: 0.5, cy: 0.5, k: 1 }; }
+  selectPlayer(i) {
+    // in POV, picking another player switches the view to them; picking the same one again leaves POV
+    this.selected = this.selected === i ? -1 : i;
+    if (this.selected < 0) { this.focus = false; this.setPov(false, true); }
+    this.emit();
+  }
+  toggleFocus() { if (this.pov) return; if (this.selected < 0) { const i = this.nearestPlayer(this.W / 2, this.H / 2); if (i >= 0) this.selected = i; } this.focus = !this.focus && this.selected >= 0; this.emit(); }
   // nearest living player to a canvas point (device pixels), within a generous radius; -1 if none
   nearestPlayer(sx, sy, maxPx = Infinity) {
     let best = -1, bd = maxPx * maxPx;
@@ -478,6 +568,7 @@ export class ReplayEngine {
         e.preventDefault();
         const [mx, my] = this.evPt(e), v = this.view, u = (mx - this.W / 2) / (v.k * this.S) + v.cx, w = (my - this.H / 2) / (v.k * this.S) + v.cy;
         const nk = Math.min(8, Math.max(0.6, v.k * (e.deltaY < 0 ? 1.15 : 1 / 1.15)));
+        if (this.pov) { v.k = nk; return; } // the camera follows the player; just change the zoom
         v.k = nk; v.cx = u - (mx - this.W / 2) / (nk * this.S); v.cy = w - (my - this.H / 2) / (nk * this.S);
       },
       down: e => {
@@ -493,7 +584,7 @@ export class ReplayEngine {
         if (this.cur) {
           const m = this.toMap(...this.evPt(e));
           if (this.cur.t === 'pen') this.cur.pts.push(m); else if (this.cur.t === 'icon') this.cur.pts = [m]; else this.cur.pts[1] = m;
-        } else if (this.drag) {
+        } else if (this.drag && !this.pov) {
           this.view.cx = this.drag.cx - (e.clientX - this.drag.x) * this.dpr / (this.view.k * this.S);
           this.view.cy = this.drag.cy - (e.clientY - this.drag.y) * this.dpr / (this.view.k * this.S);
         }
@@ -503,7 +594,9 @@ export class ReplayEngine {
         // a click (not a drag) on the map selects the nearest player
         if (this.drag && !this.cur && e && Math.hypot(e.clientX - this.drag.x, e.clientY - this.drag.y) < 4 && e.target === this.cv) {
           const [px, py] = this.evPt(e), i = this.nearestPlayer(px, py, 26 * this.dpr);
-          this.selected = i >= 0 && i !== this.selected ? i : -1; if (this.selected < 0) this.focus = false; this.emit();
+          if (this.pov) { if (i >= 0) this.selected = i; } // empty-space clicks must not drop the POV player
+          else { this.selected = i >= 0 && i !== this.selected ? i : -1; if (this.selected < 0) this.focus = false; }
+          this.emit();
         }
         if (this.cur) {
           const k = Math.round(this.pos), c = this.cur;

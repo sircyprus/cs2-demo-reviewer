@@ -181,7 +181,7 @@ export function buildReplay(api, a, ev) {
   // One tick pass for both the movement frames and the end-of-freeze economy snapshot.
   const wantedSet = new Set(grid); freezeTicks.forEach(t => wantedSet.add(t));
   const wanted = [...wantedSet].sort((x, y) => x - y);
-  const BASE = ['X', 'Y', 'Z', 'health', 'yaw', 'team_num', 'armor_value', 'active_weapon_name', 'balance', 'current_equip_value'];
+  const BASE = ['X', 'Y', 'Z', 'health', 'yaw', 'team_num', 'armor_value', 'active_weapon_name', 'balance', 'current_equip_value', 'pitch'];
   let rows;
   // team_clan_name gives real team names in tournament demos; older/other parsers may not know it, so fall back step by step
   try { rows = api.ticks([...BASE, 'team_clan_name'], wanted); }
@@ -210,7 +210,7 @@ export function buildReplay(api, a, ev) {
     for (const r of arr) {
       if (r.X == null) continue;
       p[idx.get(String(r.steamid))] = [Math.round(r.X), Math.round(r.Y), Math.round(r.Z || 0), r.health | 0, Math.round(r.yaw || 0),
-        sideIdx(r.team_num), r.armor_value | 0, weaponId(r.active_weapon_name), r.balance | 0];
+        sideIdx(r.team_num), r.armor_value | 0, weaponId(r.active_weapon_name), r.balance | 0, Math.round(r.pitch || 0)];
     }
     frames.push([t, p]);
   }

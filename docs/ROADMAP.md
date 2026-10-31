@@ -35,7 +35,7 @@ Status as of 2026-10-31. Effort: **S** = an evening, **M** = a few evenings, **L
 
 - **A sample for every active-duty map** (Ancient, Anubis and Inferno are still missing; see `docs/SAMPLES.md`).
 - ~~Filter built-in demos out~~: done, the **Show** chips (All / My demos / Sample pro demos).
-- **First-person view.** A real first-person camera needs each map's 3D geometry, which means Valve's map files (hundreds of MB, copyrighted) and a 3D renderer; not realistic for a static site. A useful 2D stand-in is a **POV mode**: lock the camera to one player and rotate the map so their view points up, draw their field of view as a wedge, show what is inside it (ignoring walls, since there is no geometry) and mirror their weapon, health and crosshair angle in a side panel. Needs pitch added to the replay data. (M)
+- ~~First-person view~~: a real 3D first-person camera needs each map's geometry (Valve's map files, hundreds of MB, copyrighted), so it is not realistic for a static site. Shipped the 2D stand-in instead: **POV mode** (see the user guide). A 3D test view (flat radar floor, no walls) was tried and dropped: it added little over the 2D POV. Revisit only with real map geometry. Still open: line of sight (needs per-map geometry) and following a killer after a death.
 
 ## Requested features (added 2026-10-31)
 

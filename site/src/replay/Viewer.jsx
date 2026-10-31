@@ -64,6 +64,44 @@ function HeatPanel({ hud, names, eng }) {
   );
 }
 
+const COMPASS = ['E', 'NE', 'N', 'NW', 'W', 'SW', 'S', 'SE'];
+
+// Side panel for POV mode: what the followed player has and where they are looking.
+// Heading is the raw game yaw (0 = east, counter-clockwise), shown with the nearest compass point of the radar.
+function PovPanel({ p, eng }) {
+  const dir = COMPASS[Math.round(p.yaw / 45) % 8];
+  const dead = p.hp <= 0, hasPitch = p.pitch != null;
+  // pitch: negative = up, positive = down; the gauge maps -90..90 onto its height
+  const mark = hasPitch ? Math.max(0, Math.min(100, 50 + p.pitch / 90 * 50)) : 50;
+  return (
+    <div className="rv-pov">
+      <div className="top">
+        <button title="Previous player ([)" onClick={() => eng().cyclePov(-1)}>◀</button>
+        <b className={SN[p.side]}>{p.name}</b>
+        <button title="Next player (])" onClick={() => eng().cyclePov(1)}>▶</button>
+      </div>
+      <div className="body">
+        <div className="gauge" title={hasPitch ? `Looking ${p.pitch < 0 ? 'up' : 'down'} ${Math.abs(p.pitch)}°` : 'No pitch in this demo'}>
+          <i className="mid" />
+          {hasPitch && <i className="mark" style={{ top: mark + '%' }} />}
+          <span className="u">up</span><span className="d">down</span>
+        </div>
+        <div className="info">
+          <div className={'pbar' + (p.hp <= 25 ? ' low' : '')}><i style={{ width: p.hp + '%' }} /></div>
+          <div className="row"><span>{dead ? 'Dead' : p.hp + ' HP'}{p.armor ? ` · ◈${p.armor}` : ''}</span><span>${p.money}</span></div>
+          <div className="row"><span>Holding</span><b>{p.weapon || '—'}</b></div>
+          <div className="row"><span>Facing</span><b>{dir} · {p.yaw}°</b></div>
+          <div className="row"><span>Pitch</span><b>{hasPitch ? `${Math.abs(p.pitch)}° ${p.pitch < 0 ? 'up' : p.pitch > 0 ? 'down' : 'level'}` : 'n/a'}</b></div>
+          <div className="row"><span>Enemies in view</span><b className={p.inView ? 'seen' : ''}>{dead ? '—' : p.inView}</b></div>
+        </div>
+      </div>
+      <label className="chk"><input type="checkbox" checked={p.fog} onChange={e => eng().setPovFog(e.target.checked)} /> Hide enemies outside the {p.fov}° view</label>
+      <div className="hint">No map geometry, so walls are ignored: an enemy in the wedge may be behind a wall.</div>
+      {!hasPitch && <div className="hint">This demo was saved before pitch was recorded. Add it again to see up/down.</div>}
+    </div>
+  );
+}
+
 function RoundInfo({ r }) {
   const [ic, tx] = r.result ? reasonOf(r.result.reason) : [];
   const parts = [
@@ -81,7 +119,7 @@ function RoundInfo({ r }) {
 }
 
 const EMPTY = {
-  playing: false, speed: 2, drawOn: false, tool: 'pen', color: COLORS[0], trail: true, names: true, level: 'upper', hasLower: false, focus: false, selected: -1,
+  pov: null, playing: false, speed: 2, drawOn: false, tool: 'pen', color: COLORS[0], trail: true, names: true, level: 'upper', hasLower: false, focus: false, selected: -1,
   heat: { layer: 'off', side: -1, player: -1, rounds: { mode: 'all', from: 1, to: 1 } }, heatN: 0, nRounds: 1,
   clock: { big: '', small: '', bomb: false, round: 1, total: 1 }, scoreT: 0, scoreCT: 0, teamT: '', teamCT: '',
   cards: [[], []], hdr: [null, null], feed: [], rinfo: { n: 1, kills: 0, total: 0, multi: [], clutch: [], entry: null, result: null },
@@ -111,6 +149,9 @@ export default function Viewer({ data, radar, slug }) {
       else if (k === ',') e.jumpRound(-1);
       else if (k === 'f' || k === 'F') e.toggleFocus();
       else if (k === 'h' || k === 'H') setHeatOpen(o => !o);
+      else if (k === 'v' || k === 'V') e.togglePov();
+      else if (e.pov && k === '[') e.cyclePov(-1);
+      else if (e.pov && k === ']') e.cyclePov(1);
     };
     window.addEventListener('keydown', onKey);
     return () => { window.removeEventListener('keydown', onKey); ro.disconnect(); e.destroy(); eng.current = null; };
@@ -138,6 +179,7 @@ export default function Viewer({ data, radar, slug }) {
             <button className={hud.names ? 'on' : ''} onClick={() => E().setOpt('names', !hud.names)}>Names</button>
             {hud.hasLower && <button onClick={() => E().setOpt('level', hud.level === 'upper' ? 'lower' : 'upper')}>Level: {hud.level}</button>}
             <button className={hud.focus ? 'on' : ''} title="Fade everyone but the selected player (F). Click a player to select." onClick={() => E().toggleFocus()}>Focus</button>
+            <button className={hud.pov ? 'on' : ''} title="Follow the selected player, turned to face up (V). Click a player first, or it picks the one nearest the middle." onClick={() => E().togglePov()}>POV</button>
             <button className={hud.heat.layer !== 'off' ? 'on' : heatOpen ? 'on' : ''} title="Heatmaps of deaths, kills and paths (H)" onClick={() => setHeatOpen(o => !o)}>Heatmap</button>
             <button onClick={() => E().resetView()}>Reset view</button>
             <button className={hud.drawOn ? 'on' : ''} title="Draw on the paused frame (D)" onClick={() => E().setDraw(!hud.drawOn)}>✏ Draw</button>
@@ -155,6 +197,7 @@ export default function Viewer({ data, radar, slug }) {
             </div>
           )}
           {heatOpen && <HeatPanel hud={hud} names={data.names} eng={E} />}
+          {hud.pov && <PovPanel p={hud.pov} eng={E} />}
           <div className="rv-feed">
             {hud.feed.map((k, i) => (
               <div key={i}>
@@ -179,7 +222,7 @@ export default function Viewer({ data, radar, slug }) {
           </select>
           <span className="muted">x speed</span>
           <span className="sp" />
-          <span className="muted"><kbd>Space</kbd> play · <kbd>←</kbd><kbd>→</kbd> 5s · <kbd>,</kbd><kbd>.</kbd> round · <kbd>D</kbd> draw · <kbd>F</kbd> focus · <kbd>H</kbd> heatmap · wheel zoom · drag pan</span>
+          <span className="muted"><kbd>Space</kbd> play · <kbd>←</kbd><kbd>→</kbd> 5s · <kbd>,</kbd><kbd>.</kbd> round · <kbd>D</kbd> draw · <kbd>F</kbd> focus · <kbd>V</kbd> POV · <kbd>H</kbd> heatmap · wheel zoom · drag pan</span>
         </div>
         <div className="rv-tlwrap">
           <canvas ref={tlRef}
